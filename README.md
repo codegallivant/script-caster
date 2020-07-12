@@ -113,7 +113,11 @@ Uniform operations are executed together. Their timespan makes it impossible to 
 These are tasks which take a relatively shorter time to execute. At least you could say, they don't take forever. 
 It is not necassary to execute non-uniform operations altogether simulataneously, since they have a short timespan. Non-Uniform operations are executed one by one.
 
-#### *Threading Practices*
+###### THE OPERATIONS DICTIONARY
+That aside, operations.py contains a dictionary dataset called 'operations'. 'operations' consists of uniform and non-uniform subsets which then contain subsets of names of parameters. It is necassary that these names remain the same as the parameters in Exterior. All code wished to be executed for these parameters must be placed within its respective parameter subset in the operations dictionary.<br>
+And that's it! That's all you need to do to create a new operation.
+
+###### *Threading Practices*
 To understand uniform operations and non-uniform operations thoroughly, threading practices should be understood:<br>
 **RuntimeError**s may be generated if many threads of code are run at once. Therefore, **caution** should be exercised when creating uniform operations.
 
