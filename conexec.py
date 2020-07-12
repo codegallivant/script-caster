@@ -4,7 +4,7 @@ import sys
 import os
 import pyautogui as pag   
 import ctypes
-from operations import operations
+from ui.operations import *
 from copy import deepcopy
 # from classes import *
 

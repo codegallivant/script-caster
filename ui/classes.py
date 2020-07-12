@@ -6,7 +6,7 @@
 #import sys
 #import time
 #import datetime
-
+#C:\Users\rekhasha\OneDrive - AMDOCS\Backup Folders\Desktop\Janak_HTML_Programs\mental-out
 #rocket = 10
 
 class Job:
