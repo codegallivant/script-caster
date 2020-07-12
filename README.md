@@ -18,7 +18,7 @@ In the following documentation for this application, you will understand how thi
 <br>
 
 ## Prerequisites:
-- Python 3.8,
+- Python 3.8
 - Pip
 - Pip Modules:
   - gspread
