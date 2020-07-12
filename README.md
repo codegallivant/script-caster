@@ -50,7 +50,7 @@ In the following documentation for this application, you will understand how thi
 1. Go to [Google's API Console](https://console.developers.google.com/) and sign in to your google account
 2. Create a project
 3. Create a service account with credentials and download the client_secret.json file
-4. Store the client_secret.json in your project root
+4. Store the client_secret.json in your project root <br>
 You're done with this step! Lets move on!
 
 <br>
