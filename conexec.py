@@ -1,12 +1,14 @@
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import sys
-import os
-import pyautogui as pag   
-import ctypes
-from ui.operations import *
-from copy import deepcopy
+from modules.common import *
+# import gspread
+# from oauth2client.service_account import ServiceAccountCredentials
+# import sys
+# import os
+# import pyautogui as pag   
+# import ctypes
+# from ui.operations import *
+# from copy import deepcopy
 # from classes import *
+
 
 
 scope = ['https://spreadsheets.google.com/feeds',

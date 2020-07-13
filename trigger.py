@@ -1,22 +1,40 @@
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from ui import connection
-import time
-# import curses
-# from classes import *
-from ui.operations import *
-import pyautogui as pag
-# from multiprocessing import Process
-import threading
-from copy import deepcopy
-import win32
-import win32gui
-import win32.lib.win32con as win32con
-import ctypes
-
+from modules.common import *
+# import gspread
+# from oauth2client.service_account import ServiceAccountCredentials
+# from ui import connection
+# import time
+# # import curses
+# # from classes import *
+# from ui.operations import *
+# import pyautogui as pag
+# # from multiprocessing import Process
+# import threading
+# from copy import deepcopy
+# import win32
+# import win32gui
+# import win32.lib.win32con as win32con
+# import ctypes
+# import socket
+# import os
+# import sys
 
 hidden = None
 the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
+
+
+def is_connected():
+    try:
+        # connect to the host -- tells us if the host is actually
+        # reachable
+        socket.create_connection(("1.1.1.1", 53))
+        return True
+    except:
+        pass
+    return False
+
+def restartprogram():
+	os.execl(sys.executable, sys.executable, *sys.argv)
+
 
 # screenlock = threading.Semaphore(value=1)
 # screenlock = threading.Semaphore(value=1)
@@ -35,7 +53,7 @@ def countdown(t, message):
 
 while True:
 	try:
-		print("Authenticating...")
+		print("\nAuthenticating...")
 		client = connection.connect()
 		print("Authentication Successful!")
 		break
@@ -63,40 +81,69 @@ processes = deepcopy(operations)
 
 for key in list(operations['uniform'].keys()):
 	processes['uniform'][key] = Job('')
-	processes['uniform'][key].code=operations['uniform'][key]
-
+	processes['uniform'][key].code=(f"""
+while True:
+	while refresh.proceed is True:
+		if refresh.{key} == True or refresh.{key} == 'True':
+			# screenlock.acquire()
+			exec(operations['uniform']['{key}']["True"])
+			# screenlock.release()
+		elif refresh.{key} == False or refresh.{key} == 'False':
+			exec(operations['uniform']['{key}']["False"])
+		else:
+			pass
+""")
+## if refresh.{key} == str({activation[0]}) or refresh.{key} == str({activation[1]}):
+		
 def refresh():
 	refresh.proceed=False
+	refresh.connected = None
 	while True:
-		for key in list(processes['uniform'].keys()):
-			exec(f"refresh.{key}=sheet.get_all_records()[0][key]")
+
+		#Checking Internet Status...
+		refresh.internet = is_connected()
+		if refresh.internet is False:
+			refresh.proceed = False
+			print("Internet Issues Detected. Restarting Program...")
+			restartprogram()
+
+		refresh.records = sheet.get_all_records()[0]
+		for key in list(refresh.records.keys()):
+			exec(f"refresh.{key}=refresh.records[key]")
 		refresh.proceed=True
 		# screenlock.acquire()
 		countdown(refresh.CHECKINTERVAL, "Next Refresh:")
 		# screenlock.release()
 
-def createprocess(key, activation):
-# for key in list(processes['uniform'].keys()):
-	exec(f"""
-while True:
-	if refresh.proceed == True:
-		if refresh.{key} == str({activation[0]}) or refresh.{key} == str({activation[1]}):
-			# screenlock.acquire()
-			processes['uniform']['{key}'].execute()
-			# screenlock.release()
-		else:
-			pass
-	""")
+# def createprocess(key, activation):
+# # for key in list(processes['uniform'].keys()):
+# 	exec(f"""
+# while True:
+# 	while refresh.proceed is True:
+# 		if refresh.{key} == str({activation[0]}) or refresh.{key} == str({activation[1]}):
+# 			# screenlock.acquire()
+# 			processes['uniform']['{key}'].execute()
+# 			# screenlock.release()
+# 		else:
+# 			pass
+# 	""")
+
+def executeProcess(name):
+	processes['uniform'][name].execute()
+
 
 def SWITCHprocess():	
-	createprocess("SWITCH", [True,True])
+	executeProcess('SWITCH')
 
 def STAYAWAKEprocess():
-	createprocess("STAYAWAKE", [True,True])
-
+	executeProcess('STAYAWAKE')
 
 def DEBUGMODEprocess():
-	createprocess("DEBUGMODE", [True,False])
+	executeProcess('DEBUGMODE')
+
+def CODEXECprocess():
+	executeProcess('CODEXEC')
+
 '''
 def main():    
 	while True:
@@ -123,8 +170,9 @@ try:
 		threading.Thread(target = DEBUGMODEprocess).start()
 		threading.Thread(target = SWITCHprocess).start()
 		threading.Thread(target = STAYAWAKEprocess).start()
+		threading.Thread(target = CODEXECprocess).start()
 except KeyboardInterrupt:
-	pass
+	sys.exit()
 
 # stdscr = curses.initscr()
 # while True:
