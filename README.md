@@ -1,19 +1,28 @@
 # mental-out
 
-#### Essential Component of project (Not uploaded to github): [Link to a copy of my version of Exterior](https://docs.google.com/spreadsheets/d/11SisyrpYn2LrBczf60J63B3OrcTgtA3gbYHxtMuHZSA/edit?usp=sharing)
+#### Essential Component of project (Not uploaded to GitHub): [Link to a copy of my version of Exterior](https://docs.google.com/spreadsheets/d/11SisyrpYn2LrBczf60J63B3OrcTgtA3gbYHxtMuHZSA/edit?usp=sharing)
 
 
 ###### BRIEF SUMMARY OF PROJECT:
-This is an application built using python. Basically, it enables a computer to be controlled remotely via Google Drive.<br>
+This is a python applications that enables a user to control their personal computer remotely via Google Drive. <br>
 In the following documentation for this application, you will understand how this app works and how you can make changes to suit your own needs.
 ###### COMPLETION STATUS: 
 *Under Development. Nearly Complete.*
 ###### *ALIASES:* 
 - mental-out 
 - project-exterior
-- esper4
+- esperSM5
 - TKNRTE12
 - connectject
+
+<br>
+
+##### CLARIFYING POTENTIAL MISCONCEPTIONS
+- This is NOT meant as a hacking tool, nor does it suit one. 
+- It can only act on a target computer, provided the application has been installed into the target.
+- It can only act on the target computer while the target is awake.
+- It can only act on the target computer while the target has access to the internet. 
+- This application has been built and tested on Windows 10 only, and several functionality are specifically for the Windows 10 OS.
 
 <br>
 
@@ -82,13 +91,13 @@ Following are rules regarding requests sent through the Google API Console. Sinc
 2. Maximum no. of requests per 100 secs is 100 for each project. 
 3. A maximum of 10 requests can be made per second per user
 - ###### DEBUGMODE
-  - If False, hides console window and blocks unnecassary print commands.
   - If True, shows console window and allows print commands.
+  - If False, hides console window and blocks unnecassary print commands.
 - ###### STAYAWAKE
   - If True, forces target computer to stay awake.
   - If False, does nothing.
 - ###### CODEXEC
-  - If True, executes given python code in target's terminal.
+  - If True, executes given python code in target's terminal. After execution, automatically turns CODEXEC False to stop further repetitive execution.
   - If False, does nothing.<br>
   - **Note**: Code to be executed is taken from the *CODE* parameter in Exterior. Whether the code execution was a success or not is written into the *LASTCODESTATUS* parameter.
 
@@ -111,17 +120,15 @@ To understand these, you will first have to understand 2 kinds of operations.
 These are tasks that take a long time to be executed. They may even go on forever.
 For example, forcing a computer to stay awake, will imply that the *STAYAWAKE* operation has to be active as long as the parameter is marked True. 
 Uniform operations are executed together. Their timespan makes it impossible to execute them one by one.
+**RuntimeError**s may be generated if many threads of code are run at once. Therefore, **caution** should be exercised when creating uniform operations.
   -  **Non-Uniform Operations** <br>
 These are tasks which take a relatively shorter time to execute. At least you could say, they don't take forever. 
-It is not necassary to execute non-uniform operations altogether simulataneously, since they have a short timespan. Non-Uniform operations are executed one by one.
+It is not necassary to execute non-uniform operations altogether simulataneously, since they have a short timespan. Therefore Non-Uniform operations are executed one by one.
 
 ###### THE OPERATIONS DICTIONARY
 That aside, operations.py contains a dictionary dataset called 'operations'. 'operations' consists of uniform and non-uniform subsets which then contain subsets of names of parameters. It is necassary that these names remain the same as the parameters in Exterior. All code wished to be executed for these parameters must be placed within its respective parameter subset in the operations dictionary.<br>
+If you wish to execute it when the parameter is True, place it within the True subset of the parameter's subset. The same goes for False.
 And that's it! That's all you need to do to create a new operation.
-
-###### *Threading Practices*
-To understand uniform operations and non-uniform operations thoroughly, threading practices should be understood:<br>
-**RuntimeError**s may be generated if many threads of code are run at once. Therefore, **caution** should be exercised when creating uniform operations.
 
 <br>
 
@@ -139,3 +146,8 @@ conexec.py handles non-uniform operations, as stated before. For testing purpose
 common.py imports modules for trigger.py and conexec.py. All modules to be imported (Be it pip or other) must be imported through common.py .
 
 <br>
+
+#### Handling Internet Issues
+Internet issues are handled in the trigger.py file, within the *is_connected()* function, which is called within the *refresh()* function, that is also inside of trigger.py .
+To describe internet disconnection more effectively for your use case, you may want to edit code within *is_connected()*. Make sure not to make internet requests prior to *is_connected()* getting called by *refresh()* function, otherwise exceptions will occur in the event of internet disconnection.
+When internet issues are detected, the program reads and restarts itself again, triggering actions that will prevent any exceptions from occuring.
