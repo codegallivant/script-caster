@@ -1,6 +1,6 @@
 # mental-out
 
-#### Essential Component of project (Not uploaded to github): [Link to a copy of my version of Exterior](https://docs.google.com/spreadsheets/d/1bAAT5t-o9ya-MbPMGvo6VJ6bYalg1MXsXRyc7rcrLJc/edit?usp=sharing)
+#### Essential Component of project (Not uploaded to github): [Link to a copy of my version of Exterior](https://docs.google.com/spreadsheets/d/11SisyrpYn2LrBczf60J63B3OrcTgtA3gbYHxtMuHZSA/edit?usp=sharing)
 
 
 ###### BRIEF SUMMARY OF PROJECT:
@@ -32,6 +32,7 @@ In the following documentation for this application, you will understand how thi
   - ctypes
   - os
   - sys
+  - socket
 - Google Account (For Google Drive)
 - Google API Console Service Account
 - *client_secret.json file* in root directory
@@ -60,12 +61,13 @@ You're done with this step! Lets move on!
 - operations.py
 - trigger.py
 - conexec.py
+- common.py
 
 <br>
 
 #### 1. Exterior
 This is essentially a google spreadsheet. It acts as a controller containing several parameters used to control the target remotely. <br>
-[Link to a copy of my version of Exterior](https://docs.google.com/spreadsheets/d/1bAAT5t-o9ya-MbPMGvo6VJ6bYalg1MXsXRyc7rcrLJc/edit?usp=sharing)
+[Link to a copy of my version of Exterior](https://docs.google.com/spreadsheets/d/11SisyrpYn2LrBczf60J63B3OrcTgtA3gbYHxtMuHZSA/edit?usp=sharing)
 
 ##### Some Important Parameters of Exterior (Uniform Operations):
 **Parameters values can be entered *'True' (ON)* or *'False' (OFF)*. Some parameters may be *text or numbers.***
@@ -85,6 +87,10 @@ Following are rules regarding requests sent through the Google API Console. Sinc
 - ###### STAYAWAKE
   - If True, forces target computer to stay awake.
   - If False, does nothing.
+- ###### CODEXEC
+  - If True, executes given python code in target's terminal.
+  - If False, does nothing.<br>
+  - **Note**: Code to be executed is taken from the *CODE* parameter in Exterior. Whether the code execution was a success or not is written into the *LASTCODESTATUS* parameter.
 
 <br>
 
@@ -95,10 +101,6 @@ Following are rules regarding requests sent through the Google API Console. Sinc
 - ###### DESKLEFT
   - If True, moves to previous virtual desktop
   - If False, does nothing
-- ###### CODEXEC
-  - If True, executes given python code in target's terminal.
-  - If False, does nothing.<br>
-  - **Note**: Code to be executed is taken from the *CODE* parameter in Exterior. Whether the code execution was a success or not is written into the *LASTCODESTATUS* parameter.
 
 <br>
 
@@ -126,7 +128,14 @@ To understand uniform operations and non-uniform operations thoroughly, threadin
 #### 3. trigger.py
 trigger.py can be called the main file, or the activator of the entire program. trigger.py is responsible for executing uniform operations and calling conexec.py, which handles non-uniform operations.
 
+<br>
+
 #### 4. conexec.py
 conexec.py handles non-uniform operations, as stated before. For testing purposes, conexec.py is separated from trigger.py. Hence, conexec.py can be run independently and execute non-uniform operations one by one.
 
+<br>
 
+#### 5. common.py
+common.py imports modules for trigger.py and conexec.py. All modules to be imported (Be it pip or other) must be imported through common.py .
+
+<br>
