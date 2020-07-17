@@ -21,35 +21,74 @@ from modules.common import *
 hidden = None
 the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
 
+#Initializing V100 Emulation
+kernel32 = ctypes.WinDLL('kernel32') 
+hStdOut = kernel32.GetStdHandle(-11)
+mode = ctypes.c_ulong()
+kernel32.GetConsoleMode(hStdOut, ctypes.byref(mode))
+mode.value |= 4
+kernel32.SetConsoleMode(hStdOut, mode)
+
+#Defining ANSI Colours:
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+class Logger():
+	def __init__(self, log):
+		self.log=[]
+		self.log.append(log)
+
+
+	def updatelog(self, text, end=None):
+		# if end == '\r' or self.getlog().count('\n')>5:
+		# 	self.log="\n".join(self.log.split("\n")[:-1])
+		# 	self.log+='\n'+text
+		# else:
+		# 	self.log+=(f"\n {text}")
+		if len(self.log)>5 or end=='\r':
+			self.log.pop(0)
+		self.log.append('\n'+text)
+
+
+	def getlog(self):
+		totalLog=""""""
+		for element in self.log:
+			totalLog+=element
+		return totalLog
+
 
 def is_connected():
     try:
-        # connect to the host -- tells us if the host is actually
-        # reachable
         socket.create_connection(("1.1.1.1", 53))
         return True
     except:
         pass
     return False
 
+
 def restartprogram():
 	os.execl(sys.executable, sys.executable, *sys.argv)
 
 
-# screenlock = threading.Semaphore(value=1)
-# screenlock = threading.Semaphore(value=1)
-# screenlock.acquire()
-
-
-def countdown(t, message):
+def countdown(t, message, logger=None):
     while t:
         mins, secs = divmod(t, 60)
         timeformat = '{:02d}:{:02d}'.format(mins, secs)
-       	# screenlock.acquire()
-        print(f"{message} {timeformat}", end='\r')
-        # screenlock.release()
+       	if logger==None:
+        		print(f"{message} {timeformat}", end='\r')
+        else:
+        	exec(f"logger.updatelog('{message} {timeformat}', end='\\r')")
         time.sleep(1)
         t -= 1
+
 
 while True:
 	try:
@@ -82,6 +121,9 @@ processes = deepcopy(operations)
 for key in list(operations['uniform'].keys()):
 	processes['uniform'][key] = Job('')
 	processes['uniform'][key].code=(f"""
+global {key}logger
+{key}logger = Logger('')
+print = {key}logger.updatelog
 while True:
 	while refresh.proceed is True:
 		if refresh.{key} == True or refresh.{key} == 'True':
@@ -93,9 +135,15 @@ while True:
 		else:
 			pass
 """)
-## if refresh.{key} == str({activation[0]}) or refresh.{key} == str({activation[1]}):
-		
+
+refreshlogger=Logger('')
+for key in list(operations['uniform'].keys()):
+	exec(f"{key}logger=Logger('')")
+
+
 def refresh():
+	global refreshlogger
+	print = refreshlogger.updatelog
 	refresh.proceed=False
 	refresh.connected = None
 	while True:
@@ -104,16 +152,88 @@ def refresh():
 		refresh.internet = is_connected()
 		if refresh.internet is False:
 			refresh.proceed = False
-			print("Internet Issues Detected. Restarting Program...")
+			print(f"{bcolors.FAIL}Internet Issues Detected. Restarting Program...{bcolors.ENDC}")
+			time.sleep(5)
 			restartprogram()
 
 		refresh.records = sheet.get_all_records()[0]
 		for key in list(refresh.records.keys()):
 			exec(f"refresh.{key}=refresh.records[key]")
 		refresh.proceed=True
-		# screenlock.acquire()
-		countdown(refresh.CHECKINTERVAL, "Next Refresh:")
-		# screenlock.release()
+		countdown(refresh.CHECKINTERVAL, "Next Request In:", logger=refreshlogger)
+
+
+def displaylog():
+
+	displaylog.thisloggerlog=None
+	displaylog.toprint=""""""
+
+	global refreshlogger
+
+	for key in list(operations['uniform'].keys()):
+		exec(f"""
+global {key}logger
+""")
+
+	while True:
+
+		time.sleep(1)
+
+		displaylog.toprint=""""""
+
+		for key in list(operations['uniform'].keys()):
+			exec(f"""
+displaylog.thisloggerlog = {key}logger.getlog()
+""")		
+
+			displaylog.toprint+=(f"""
+{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}{key}{bcolors.ENDC} 
+{displaylog.thisloggerlog}
+\n
+""")
+
+		print(f"""
+\033c
+{bcolors.HEADER}
+
+▒█▀▄▀█ ▒█▀▀▀ ▒█▄░▒█ ▀▀█▀▀ ░█▀▀█ ▒█░░░ ░░ ▒█▀▀▀█ ▒█░▒█ ▀▀█▀▀ 
+▒█▒█▒█ ▒█▀▀▀ ▒█▒█▒█ ░▒█░░ ▒█▄▄█ ▒█░░░ ▀▀ ▒█░░▒█ ▒█░▒█ ░▒█░░ 
+▒█░░▒█ ▒█▄▄▄ ▒█░░▀█ ░▒█░░ ▒█░▒█ ▒█▄▄█ ░░ ▒█▄▄▄█ ░▀▄▄▀ ░▒█░░
+{bcolors.ENDC} {bcolors.OKGREEN}{refreshlogger.getlog()}{bcolors.ENDC}
+\n\n\n
+{displaylog.toprint}
+""")
+		
+		# time.sleep(1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}SWITCH{bcolors.ENDC} 
+{SWITCHlogger.getlog()}
+\n\n\n
+{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}STAYAWAKE{bcolors.ENDC} 
+{STAYAWAKElogger.getlog()}
+\n\n\n
+{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}DEBUGMODE{bcolors.ENDC}   
+{DEBUGMODElogger.getlog()}
+\n\n\n
+{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}CODEXEC{bcolors.ENDC}  
+{CODEXEClogger.getlog()}
+\n\n\n
+""")'''
 
 # def createprocess(key, activation):
 # # for key in list(processes['uniform'].keys()):
@@ -144,6 +264,8 @@ def DEBUGMODEprocess():
 def CODEXECprocess():
 	executeProcess('CODEXEC')
 
+def DISPLAYLOGprocess():
+	displaylog()
 '''
 def main():    
 	while True:
@@ -171,6 +293,7 @@ try:
 		threading.Thread(target = SWITCHprocess).start()
 		threading.Thread(target = STAYAWAKEprocess).start()
 		threading.Thread(target = CODEXECprocess).start()
+		threading.Thread(target = DISPLAYLOGprocess).start()
 except KeyboardInterrupt:
 	sys.exit()
 
@@ -198,3 +321,10 @@ STAYAWAKE
 CLOSEALL
 CHECKINTERVAL 
 '''
+# ||     ||--  =======
+# | |   | |-- |       |
+# |  | |  |-- |       |        _________
+# |   |   |-- |       | |     |    |
+# |	    |-- |       | |     |    |
+# |		|-- |       | |     |    |
+# |       |--  =======  |_____|    |

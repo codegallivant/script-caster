@@ -57,7 +57,7 @@ if hidden != True:
 			"True":"""
 
 pag.press('f15')
-countdown(60, "STAYING AWAKE. Next Press:")
+countdown(60, "STAYING AWAKE. Next Press:",logger=STAYAWAKElogger)
 
 			""",
 
@@ -65,12 +65,12 @@ countdown(60, "STAYING AWAKE. Next Press:")
 
 		},
 
-		"CHECKINTERVAL": {
+		# "CHECKINTERVAL": {
 
-			"True":"""""",
-			"False":""""""
+		# 	"True":"""""",
+		# 	"False":""""""
 
-		},
+		# },
 
 		"CODEXEC": {
 
