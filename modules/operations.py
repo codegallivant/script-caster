@@ -1,4 +1,4 @@
-#THE OPERATIONS DICTIONARY:
+#THE OPERATIONS DICTIONARY DATASET:
 
 operations = {
 
@@ -13,10 +13,10 @@ operations = {
 			"True": """
 
 print("Non-Uniform Operations Gateway is OPEN. Initiating Process...")
-from conexec import *
+import conexec
 print("Process has ended. Instructions Executed.")
 refresh.SWITCH=False
-sheet.update_cell(2,1,"False")
+protectDisconnect('''sheet.update_cell(2,1,"False")''')
 print("Non-Uniform Operations Gateway has been CLOSED.")
 		
 			""",
@@ -57,7 +57,7 @@ if hidden != True:
 			"True":"""
 
 pag.press('f15')
-countdown(60, "STAYING AWAKE. Next Press:",logger=STAYAWAKElogger)
+countdown(60, "Staying awake. Next Press:",logger=STAYAWAKElogger)
 
 			""",
 
@@ -82,14 +82,14 @@ try:
 	exec(f'''
 {refresh.CODE}
 ''')
-	sheet.update_cell(2,6,"Success")
+	protectDisconnect('''sheet.update_cell(2,6,"Success")''')
 	print("Code Execution was Successful!")
 except:
-	sheet.update_cell(2,6,"Failure")
+	protectDisconnect('''sheet.update_cell(2,6,"Failure")''')
 	print("Code Execution gave an exception! Please check the code again and retry.")
 
 refresh.CODEXEC=False
-sheet.update_cell(2,4,"False")
+protectDisconnect('''sheet.update_cell(2,4,"False")''')
 print("Code Execution Gateway has been CLOSED.")
 
 			""",
@@ -116,18 +116,6 @@ pag.hotkey("ctrl","winleft","left")
 		"""
 	}
 }
-
-# if hidden != True:
-# 	if refresh.DEBUGMODE == False or refresh.DEBUGMODE == 'False':
-# 		print('Hiding window...')
-# 		win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
-# 		hidden = True
-
-# if hidden != False:
-# 	if refresh.DEBUGMODE == True or refresh.DEBUGMODE == 'True':
-# 		print('Showing window...')
-# 		win32gui.ShowWindow(the_program_to_hide , win32con.SW_SHOW)
-# 		hidden = False
 
 # kernel32 = ctypes.WinDLL('kernel32')
 # user32 = ctypes.WinDLL('user32')

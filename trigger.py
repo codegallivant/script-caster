@@ -1,22 +1,5 @@
 from modules.common import *
-# import gspread
-# from oauth2client.service_account import ServiceAccountCredentials
-# from ui import connection
-# import time
-# # import curses
-# # from classes import *
-# from ui.operations import *
-# import pyautogui as pag
-# # from multiprocessing import Process
-# import threading
-# from copy import deepcopy
-# import win32
-# import win32gui
-# import win32.lib.win32con as win32con
-# import ctypes
-# import socket
-# import os
-# import sys
+
 
 hidden = None
 the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
@@ -29,7 +12,12 @@ kernel32.GetConsoleMode(hStdOut, ctypes.byref(mode))
 mode.value |= 4
 kernel32.SetConsoleMode(hStdOut, mode)
 
-#Defining ANSI Colours:
+
+class Exterior:
+ 	pass
+
+
+#Defining ANSI Colour Codes and MENTALOUT Header Text:
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -39,6 +27,21 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+    CLRSCRN = '\033c'
+    MENTALOUT ='''
+
+▒█▀▄▀█ ▒█▀▀▀ ▒█▄░▒█ ▀▀█▀▀ ░█▀▀█ ▒█░░░ ░░ ▒█▀▀▀█ ▒█░▒█ ▀▀█▀▀ 
+▒█▒█▒█ ▒█▀▀▀ ▒█▒█▒█ ░▒█░░ ▒█▄▄█ ▒█░░░ ▀▀ ▒█░░▒█ ▒█░▒█ ░▒█░░ 
+▒█░░▒█ ▒█▄▄▄ ▒█░░▀█ ░▒█░░ ▒█░▒█ ▒█▄▄█ ░░ ▒█▄▄▄█ ░▀▄▄▀ ░▒█░░
+'''
+
+
+class Job:
+	def __init__(self, code):
+		self.code = code
+
+	def execute(self):
+		exec(self.code)
 
 
 class Logger():
@@ -48,11 +51,6 @@ class Logger():
 
 
 	def updatelog(self, text, end=None):
-		# if end == '\r' or self.getlog().count('\n')>5:
-		# 	self.log="\n".join(self.log.split("\n")[:-1])
-		# 	self.log+='\n'+text
-		# else:
-		# 	self.log+=(f"\n {text}")
 		if len(self.log)>5 or end=='\r':
 			self.log.pop(0)
 		self.log.append('\n'+text)
@@ -63,6 +61,7 @@ class Logger():
 		for element in self.log:
 			totalLog+=element
 		return totalLog
+
 
 
 def is_connected():
@@ -76,6 +75,16 @@ def is_connected():
 
 def restartprogram():
 	os.execl(sys.executable, sys.executable, *sys.argv)
+
+
+def protectDisconnect(codetext):
+	try:
+		exec(codetext)
+	except:
+		exec(f"refreshlogger.updatelog('{bcolors.FAIL}Internet Issues Detected. Restarting Program...{bcolors.ENDC}')")
+		refresh.proceed = False
+		time.sleep(5)
+		restartprogram()
 
 
 def countdown(t, message, logger=None):
@@ -92,28 +101,20 @@ def countdown(t, message, logger=None):
 
 while True:
 	try:
-		print("\nAuthenticating...")
+		print(f"\n{bcolors.OKBLUE}Authenticating...{bcolors.ENDC}")
 		client = connection.connect()
-		print("Authentication Successful!")
+		print(F"{bcolors.OKGREEN}Authentication Successful!{bcolors.ENDC}")
 		break
 	except:
-		countdown(60, "Authentication Failed. Next Attempt to Authenticate:")
+		countdown(60, f"{bcolors.WARNING}Authentication Failed. Next Attempt to Authenticate:{bcolors.ENDC}")
 
 while True:		
 	try:
 		sheet = connection.opensheet("exterior", client)
-		print("Spreadsheet opened.")
+		print(f"{bcolors.OKGREEN}Spreadsheet opened.{bcolors.ENDC}")
 		break
 	except:
-		countdown(60, "Spreadsheet could not be opened. Next Attempt to Open Spreadsheet:")
-
-
-class Job:
-	def __init__(self, code):
-		self.code = code
-
-	def execute(self):
-		exec(self.code)
+		countdown(60, f"{bcolors.WARNING}Spreadsheet could not be opened. Next Attempt to Open Spreadsheet:{bcolors.ENDC}")
 
 
 processes = deepcopy(operations)
@@ -126,15 +127,16 @@ global {key}logger
 print = {key}logger.updatelog
 while True:
 	while refresh.proceed is True:
-		if refresh.{key} == True or refresh.{key} == 'True':
+		if Exterior.{key} == True or Exterior.{key} == 'True':
 			# screenlock.acquire()
 			exec(operations['uniform']['{key}']["True"])
 			# screenlock.release()
-		elif refresh.{key} == False or refresh.{key} == 'False':
+		elif Exterior.{key} == False or Exterior.{key} == 'False':
 			exec(operations['uniform']['{key}']["False"])
 		else:
 			pass
 """)
+
 
 refreshlogger=Logger('')
 for key in list(operations['uniform'].keys()):
@@ -146,21 +148,13 @@ def refresh():
 	print = refreshlogger.updatelog
 	refresh.proceed=False
 	refresh.connected = None
+	Exterior.records = None
 	while True:
-
-		#Checking Internet Status...
-		refresh.internet = is_connected()
-		if refresh.internet is False:
-			refresh.proceed = False
-			print(f"{bcolors.FAIL}Internet Issues Detected. Restarting Program...{bcolors.ENDC}")
-			time.sleep(5)
-			restartprogram()
-
-		refresh.records = sheet.get_all_records()[0]
-		for key in list(refresh.records.keys()):
-			exec(f"refresh.{key}=refresh.records[key]")
+		protectDisconnect('Exterior.records = sheet.get_all_records()[0]')
+		for key in list(Exterior.records.keys()):
+			exec(f"Exterior.{key}=Exterior.records[key]")
 		refresh.proceed=True
-		countdown(refresh.CHECKINTERVAL, "Next Request In:", logger=refreshlogger)
+		countdown(Exterior.CHECKINTERVAL, "Next Request In:", logger=refreshlogger)
 
 
 def displaylog():
@@ -193,138 +187,23 @@ displaylog.thisloggerlog = {key}logger.getlog()
 """)
 
 		print(f"""
-\033c
+{bcolors.CLRSCRN}
 {bcolors.HEADER}
-
-▒█▀▄▀█ ▒█▀▀▀ ▒█▄░▒█ ▀▀█▀▀ ░█▀▀█ ▒█░░░ ░░ ▒█▀▀▀█ ▒█░▒█ ▀▀█▀▀ 
-▒█▒█▒█ ▒█▀▀▀ ▒█▒█▒█ ░▒█░░ ▒█▄▄█ ▒█░░░ ▀▀ ▒█░░▒█ ▒█░▒█ ░▒█░░ 
-▒█░░▒█ ▒█▄▄▄ ▒█░░▀█ ░▒█░░ ▒█░▒█ ▒█▄▄█ ░░ ▒█▄▄▄█ ░▀▄▄▀ ░▒█░░
+{bcolors.MENTALOUT}
 {bcolors.ENDC} {bcolors.OKGREEN}{refreshlogger.getlog()}{bcolors.ENDC}
-\n\n\n
+\n\n
 {displaylog.toprint}
 """)
 		
-		# time.sleep(1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}SWITCH{bcolors.ENDC} 
-{SWITCHlogger.getlog()}
-\n\n\n
-{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}STAYAWAKE{bcolors.ENDC} 
-{STAYAWAKElogger.getlog()}
-\n\n\n
-{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}DEBUGMODE{bcolors.ENDC}   
-{DEBUGMODElogger.getlog()}
-\n\n\n
-{bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}CODEXEC{bcolors.ENDC}  
-{CODEXEClogger.getlog()}
-\n\n\n
-""")'''
-
-# def createprocess(key, activation):
-# # for key in list(processes['uniform'].keys()):
-# 	exec(f"""
-# while True:
-# 	while refresh.proceed is True:
-# 		if refresh.{key} == str({activation[0]}) or refresh.{key} == str({activation[1]}):
-# 			# screenlock.acquire()
-# 			processes['uniform']['{key}'].execute()
-# 			# screenlock.release()
-# 		else:
-# 			pass
-# 	""")
 
 def executeProcess(name):
 	processes['uniform'][name].execute()
 
-
-def SWITCHprocess():	
-	executeProcess('SWITCH')
-
-def STAYAWAKEprocess():
-	executeProcess('STAYAWAKE')
-
-def DEBUGMODEprocess():
-	executeProcess('DEBUGMODE')
-
-def CODEXECprocess():
-	executeProcess('CODEXEC')
-
-def DISPLAYLOGprocess():
-	displaylog()
-'''
-def main():    
-	while True:
-		if refresh.proceed == True:
-			if refresh.SWITCH == "True":
-				processes['uniform']['SWITCH'].execute()
-			else:
-				pass
-
-def stayawake():
-	while True:
-		if refresh.proceed == True:
-			while refresh.STAYAWAKE == "True":
-				processes['uniform']['STAYAWAKE'].execute()
-
-if __name__=='__main__':
+def main():
 	threading.Thread(target = refresh).start()
-	threading.Thread(target = main).start()
-	threading.Thread(target = refresh).start()
-'''
-try:
-	if __name__=='__main__':
-		threading.Thread(target = refresh).start()
-		threading.Thread(target = DEBUGMODEprocess).start()
-		threading.Thread(target = SWITCHprocess).start()
-		threading.Thread(target = STAYAWAKEprocess).start()
-		threading.Thread(target = CODEXECprocess).start()
-		threading.Thread(target = DISPLAYLOGprocess).start()
-except KeyboardInterrupt:
-	sys.exit()
+	for key in list(processes['uniform']):
+		print(key)
+		threading.Thread(target = executeProcess, args=[key]).start()
+	threading.Thread(target = displaylog).start()
 
-# stdscr = curses.initscr()
-# while True:
-#     stdscr.erase()
-#     stdscr.addstr('>>> Thread 1: ' + str(line_thread_1) + '\n')
-#     stdscr.addstr('>>> Thread 2: ' + str(line_thread_2) + '\n')
-#     stdscr.addstr('>>> Thread 2: ' + str(line_thread_3) + '\n')
-#     stdscr.refresh()
-#     time.sleep(1)
-# curses.endwin()
-# screenlock.release()
-
-
-
-'''All uniform side functions will be called simulataneously and run on instruction of uniform main function
-uniform side functions will use global variables to break away midway
-uniform main function will run literally all the time and will call multiexecution() function
-multiexecution function will multiexecute main and side functions
-
-Uniform side functions:
-DEBUGMODE
-STAYAWAKE
-CLOSEALL
-CHECKINTERVAL 
-'''
-# ||     ||--  =======
-# | |   | |-- |       |
-# |  | |  |-- |       |        _________
-# |   |   |-- |       | |     |    |
-# |	    |-- |       | |     |    |
-# |		|-- |       | |     |    |
-# |       |--  =======  |_____|    |
+main()
