@@ -11,8 +11,8 @@ def connect():
 #	print("Authentication Successful!")
 	return client
 
-def opensheet(name, client):
-	sheet = client.open(name).sheet1
+def opensheet(filename, sheetname, client):
+	sheet = client.open(filename).worksheet(sheetname)
 	return sheet
 
 

@@ -15,8 +15,8 @@ operations = {
 print("Non-Uniform Operations Gateway is OPEN. Initiating Process...")
 import conexec
 print("Process has ended. Instructions Executed.")
-refresh.SWITCH=False
-protectDisconnect('''sheet.update_cell(2,1,"False")''')
+Exterior.SWITCH=False
+protectConnection('''sheet.update_cell(2,1,"False")''')
 print("Non-Uniform Operations Gateway has been CLOSED.")
 		
 			""",
@@ -57,7 +57,7 @@ if hidden != True:
 			"True":"""
 
 pag.press('f15')
-countdown(60, "Staying awake. Next Press:",logger=STAYAWAKElogger)
+countdown(60, "Staying awake. Next F15 keypress:",logger=STAYAWAKElogger)
 
 			""",
 
@@ -80,16 +80,16 @@ print("Code Execution Gateway is OPEN.")
 print('Recieved code will now be executed.')
 try:
 	exec(f'''
-{refresh.CODE}
+{Exterior.CODE}
 ''')
-	protectDisconnect('''sheet.update_cell(2,6,"Success")''')
+	protectConnection('''sheet.update_cell(2,6,"Success")''')
 	print("Code Execution was Successful!")
 except:
-	protectDisconnect('''sheet.update_cell(2,6,"Failure")''')
+	protectConnection('''sheet.update_cell(2,6,"Failure")''')
 	print("Code Execution gave an exception! Please check the code again and retry.")
 
-refresh.CODEXEC=False
-protectDisconnect('''sheet.update_cell(2,4,"False")''')
+Exterior.CODEXEC=False
+protectConnection('''sheet.update_cell(2,4,"False")''')
 print("Code Execution Gateway has been CLOSED.")
 
 			""",

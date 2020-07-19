@@ -3,6 +3,7 @@ from modules.common import *
 
 hidden = None
 the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
+computer_name = socket.gethostname()
 
 #Initializing V100 Emulation
 kernel32 = ctypes.WinDLL('kernel32') 
@@ -35,6 +36,8 @@ class bcolors:
 ▒█░░▒█ ▒█▄▄▄ ▒█░░▀█ ░▒█░░ ▒█░▒█ ▒█▄▄█ ░░ ▒█▄▄▄█ ░▀▄▄▀ ░▒█░░
 '''
 
+print(f'\n\n{bcolors.OKGREEN}Welcome {bcolors.HEADER}{computer_name}{bcolors.ENDC} {bcolors.OKGREEN}!{bcolors.ENDC}')
+
 
 class Job:
 	def __init__(self, code):
@@ -53,8 +56,11 @@ class Logger():
 	def updatelog(self, text, end=None):
 		if len(self.log)>5 or end=='\r':
 			self.log.pop(0)
-		self.log.append('\n'+text)
+		self.log.append('\n'+bcolors.WARNING+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+':	'+bcolors.ENDC+text)
 
+	def deletelog(self):
+		while len(self.log):
+			self.log.pop(0)
 
 	def getlog(self):
 		totalLog=""""""
@@ -63,25 +69,21 @@ class Logger():
 		return totalLog
 
 
-
-def is_connected():
-    try:
-        socket.create_connection(("1.1.1.1", 53))
-        return True
-    except:
-        pass
-    return False
-
-
 def restartprogram():
 	os.execl(sys.executable, sys.executable, *sys.argv)
 
 
-def protectDisconnect(codetext):
+def protectConnection(codetext):
+	global mainlogger
+	global refreshlogger
 	try:
 		exec(codetext)
+		mainlogger.deletelog()
+		mainlogger.updatelog(f'{bcolors.HEADER}{computer_name}{bcolors.ENDC}{bcolors.OKBLUE} is currently connected to {bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC}{bcolors.ENDC}')
 	except:
-		exec(f"refreshlogger.updatelog('{bcolors.FAIL}Internet Issues Detected. Restarting Program...{bcolors.ENDC}')")
+		mainlogger.deletelog()
+		refreshlogger.deletelog()
+		mainlogger.updatelog(f'{bcolors.FAIL}\nALERT: \nInternet issues have been detected. \n{bcolors.HEADER}{computer_name}{bcolors.ENDC}{bcolors.FAIL} is currently disconnected from {bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC} \n{bcolors.OKGREEN}Restarting Program...{bcolors.ENDC}{bcolors.ENDC}')
 		refresh.proceed = False
 		time.sleep(5)
 		restartprogram()
@@ -101,7 +103,7 @@ def countdown(t, message, logger=None):
 
 while True:
 	try:
-		print(f"\n{bcolors.OKBLUE}Authenticating...{bcolors.ENDC}")
+		print(f"\n{bcolors.OKBLUE}Authenticating with {bcolors.HEADER}Exterior{bcolors.ENDC}...{bcolors.ENDC}")
 		client = connection.connect()
 		print(F"{bcolors.OKGREEN}Authentication Successful!{bcolors.ENDC}")
 		break
@@ -110,11 +112,11 @@ while True:
 
 while True:		
 	try:
-		sheet = connection.opensheet("exterior", client)
-		print(f"{bcolors.OKGREEN}Spreadsheet opened.{bcolors.ENDC}")
+		sheet = connection.opensheet("Exterior",computer_name, client)
+		print(f"{bcolors.OKGREEN}Connected with {bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC}{bcolors.ENDC}")
 		break
 	except:
-		countdown(60, f"{bcolors.WARNING}Spreadsheet could not be opened. Next Attempt to Open Spreadsheet:{bcolors.ENDC}")
+		countdown(60, f"{bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC}{bcolors.WARNING} could not be opened. Next Attempt:{bcolors.ENDC}")
 
 
 processes = deepcopy(operations)
@@ -137,8 +139,9 @@ while True:
 			pass
 """)
 
-
+mainlogger=Logger('')
 refreshlogger=Logger('')
+
 for key in list(operations['uniform'].keys()):
 	exec(f"{key}logger=Logger('')")
 
@@ -150,11 +153,11 @@ def refresh():
 	refresh.connected = None
 	Exterior.records = None
 	while True:
-		protectDisconnect('Exterior.records = sheet.get_all_records()[0]')
+		protectConnection('Exterior.records = sheet.get_all_records()[0]')
 		for key in list(Exterior.records.keys()):
 			exec(f"Exterior.{key}=Exterior.records[key]")
 		refresh.proceed=True
-		countdown(Exterior.CHECKINTERVAL, "Next Request In:", logger=refreshlogger)
+		countdown(Exterior.CHECKINTERVAL, f"{bcolors.OKGREEN}Next Request In:{bcolors.ENDC}", logger=refreshlogger)
 
 
 def displaylog():
@@ -163,6 +166,7 @@ def displaylog():
 	displaylog.toprint=""""""
 
 	global refreshlogger
+	global mainlogger
 
 	for key in list(operations['uniform'].keys()):
 		exec(f"""
@@ -188,9 +192,10 @@ displaylog.thisloggerlog = {key}logger.getlog()
 
 		print(f"""
 {bcolors.CLRSCRN}
-{bcolors.HEADER}
-{bcolors.MENTALOUT}
-{bcolors.ENDC} {bcolors.OKGREEN}{refreshlogger.getlog()}{bcolors.ENDC}
+{bcolors.HEADER}{bcolors.MENTALOUT}{bcolors.ENDC}
+{bcolors.HEADER}Welcome {computer_name} !{bcolors.ENDC}
+{mainlogger.getlog()} 
+{refreshlogger.getlog()}
 \n\n
 {displaylog.toprint}
 """)
@@ -199,11 +204,12 @@ displaylog.thisloggerlog = {key}logger.getlog()
 def executeProcess(name):
 	processes['uniform'][name].execute()
 
+
 def main():
 	threading.Thread(target = refresh).start()
 	for key in list(processes['uniform']):
-		print(key)
 		threading.Thread(target = executeProcess, args=[key]).start()
 	threading.Thread(target = displaylog).start()
+
 
 main()

@@ -148,6 +148,4 @@ common.py imports modules for trigger.py and conexec.py. All modules to be impor
 <br>
 
 #### Handling Internet Issues
-Internet issues are handled in the trigger.py file, within the *is_connected()* function, which is called within the *refresh()* function, that is also inside of trigger.py .
-To describe internet disconnection more effectively for your use case, you may want to edit code within *is_connected()*. Make sure not to make internet requests prior to *is_connected()* getting called by *refresh()* function, otherwise exceptions will occur in the event of internet disconnection.
-When internet issues are detected, the program reads and restarts itself again, triggering actions that will prevent any exceptions from occuring.
+Engulf all code requiring internet connection within quotes as a parameter within the *protectConnection()* function to avoid exceptions when internet issues arise.
