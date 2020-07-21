@@ -1,12 +1,9 @@
 from modules.common import *
 
 
-scope = ['https://spreadsheets.google.com/feeds',
-'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
-client = gspread.authorize(creds)
+client = connection.connect()
+sheet = connection.opensheet('Exterior',socket.gethostname(),client)
 
-sheet = client.open("exterior").sheet1
 data = sheet.get_all_records()[0]
 
 DEBUGMODE = data["DEBUGMODE"]

@@ -105,7 +105,7 @@ while True:
 	try:
 		print(f"\n{bcolors.OKBLUE}Authenticating with {bcolors.HEADER}Exterior{bcolors.ENDC}...{bcolors.ENDC}")
 		client = connection.connect()
-		print(F"{bcolors.OKGREEN}Authentication Successful!{bcolors.ENDC}")
+		print(f"{bcolors.OKGREEN}Authentication Successful!{bcolors.ENDC}")
 		break
 	except:
 		countdown(60, f"{bcolors.WARNING}Authentication Failed. Next Attempt to Authenticate:{bcolors.ENDC}")
@@ -175,8 +175,6 @@ global {key}logger
 
 	while True:
 
-		time.sleep(1)
-
 		displaylog.toprint=""""""
 
 		for key in list(operations['uniform'].keys()):
@@ -189,7 +187,8 @@ displaylog.thisloggerlog = {key}logger.getlog()
 {displaylog.thisloggerlog}
 \n
 """)
-
+		time.sleep(1)
+		
 		print(f"""
 {bcolors.CLRSCRN}
 {bcolors.HEADER}{bcolors.MENTALOUT}{bcolors.ENDC}

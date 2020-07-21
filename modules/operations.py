@@ -13,7 +13,7 @@ operations = {
 			"True": """
 
 print("Non-Uniform Operations Gateway is OPEN. Initiating Process...")
-import conexec
+protectConnection('''from conexec import *''')
 print("Process has ended. Instructions Executed.")
 Exterior.SWITCH=False
 protectConnection('''sheet.update_cell(2,1,"False")''')
@@ -109,9 +109,11 @@ print("Code Execution Gateway has been CLOSED.")
 		"SCREENLOG" :"""
 		""", 
 		"DESKRIGHT":"""
+print("Switching to next virtual desktop")
 pag.hotkey("ctrl","winleft","right")
 		""",
 		"DESKLEFT":"""
+print("Switching to previous virtual desktop")
 pag.hotkey("ctrl","winleft","left")
 		"""
 	}
