@@ -59,7 +59,7 @@ class Logger():
 		self.log.append('\n'+bcolors.WARNING+datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')+':	'+bcolors.ENDC+text)
 
 	def deletelog(self):
-		while len(self.log):
+		while bool(len(self.log)) is True:
 			self.log.pop(0)
 
 	def getlog(self):
@@ -73,7 +73,7 @@ def restartprogram():
 	os.execl(sys.executable, sys.executable, *sys.argv)
 
 
-def protectConnection(codetext):
+def protect_connection(codetext):
 	global mainlogger
 	global refreshlogger
 	try:
@@ -118,6 +118,7 @@ while True:
 	except:
 		countdown(60, f"{bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC}{bcolors.WARNING} could not be opened. Next Attempt:{bcolors.ENDC}")
 
+win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
 
 processes = deepcopy(operations)
 
@@ -153,7 +154,7 @@ def refresh():
 	refresh.connected = None
 	Exterior.records = None
 	while True:
-		protectConnection('Exterior.records = sheet.get_all_records()[0]')
+		protect_connection('Exterior.records = sheet.get_all_records()[0]')
 		for key in list(Exterior.records.keys()):
 			exec(f"Exterior.{key}=Exterior.records[key]")
 		refresh.proceed=True
@@ -188,7 +189,7 @@ displaylog.thisloggerlog = {key}logger.getlog()
 \n
 """)
 		time.sleep(1)
-		
+
 		print(f"""
 {bcolors.CLRSCRN}
 {bcolors.HEADER}{bcolors.MENTALOUT}{bcolors.ENDC}
@@ -197,6 +198,8 @@ displaylog.thisloggerlog = {key}logger.getlog()
 {refreshlogger.getlog()}
 \n\n
 {displaylog.toprint}
+
+{bcolors.HEADER}CACHE LOGS:{bcolors.ENDC}
 """)
 		
 

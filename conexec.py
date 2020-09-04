@@ -1,56 +1,80 @@
 from modules.common import *
 
 
-client = connection.connect()
-sheet = connection.opensheet('Exterior',socket.gethostname(),client)
-
-data = sheet.get_all_records()[0]
-
-DEBUGMODE = data["DEBUGMODE"]
-
-
-if DEBUGMODE=='True':
-	print(data)
-
-for col in range(1,len(data)+1):
-	var=sheet.cell(1,col).value 	
-	exec(f"{var} = data[var]")	
-	exec(f'''
-if {var}=="":
-	{var}=None
-elif {var}=="True":
-	{var}=True
-elif {var}=="False":
-	{var}=False
-else:
-	#{var}=str(data[{var}])
-	pass
-'''
-	)
-	if DEBUGMODE=='True' or DEBUGMODE == True:
-		print(f"{var}={data[var]}")
-
 class Job:
-	def __init__(self, code):
-		self.code = code
+		def __init__(self, code):
+			self.code = code
 
-	def execute(self):
-		exec(self.code)
+		def execute(self):
+			exec(self.code)
 
 
-nodes = deepcopy(operations)
-processes = deepcopy(operations)
+class World:
 
-for key in list(operations['non-uniform'].keys()):
-	exec(f"nodes['non-uniform'][key] = {key}")
-	processes['non-uniform'][key] = Job('')
-	processes['non-uniform'][key].code=operations['non-uniform'][key]
+	def start_connection():
+		# global connection
+		# scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+#	print("Authenticating...")
+		# creds = ServiceAccountCredentials.from_json_keyfile_name('service_account_credentials.json', scope)
+		# client = gspread.authorize(creds)
+		World.client = connection.connect()
+		# sheet = client.open('Exterior').worksheet(socket.gethostname())
+		World.sheet = connection.opensheet('Exterior',socket.gethostname(),World.client)
+		World.data = World.sheet.get_all_records()[0]
+		World.DEBUGMODE = World.data["DEBUGMODE"]
 
-def non_uniformers():
-	for key in list(nodes['non-uniform'].keys()):
-		if nodes['non-uniform'][key] is True:
-			processes['non-uniform'][key].execute()
 
-if SWITCH == True:
-	non_uniformers()
-	
+	def initialize():
+
+		if World.DEBUGMODE=='True':
+			print(World.data)
+
+		for col in range(0,len(World.data)-1):
+			# var=sheet.cell(1,col).value 	
+			var = list(World.data.keys())[col]
+			exec(f"World.{var} = World.data[var]")	
+			exec(f'''
+if World.{var}=="":
+	World.{var}=None
+elif World.{var}=="True":
+	World.{var}=True
+elif World.{var}=="False":
+	World.{var}=False
+else:
+	#World.{var}=str(World.data[{var}])
+	pass
+		'''
+			)
+			if World.DEBUGMODE=='True' or World.DEBUGMODE == True:
+				print(f"{var}={World.data[var]}")
+
+
+	def prepare(): 
+		# global operations
+		World.nodes = deepcopy(operations)
+		World.processes = deepcopy(operations)
+		for key in list(operations['non-uniform'].keys()):
+			exec(f"World.nodes['non-uniform'][key] = World.{key}")
+			World.processes['non-uniform'][key] = Job('')
+			World.processes['non-uniform'][key].code=operations['non-uniform'][key]
+
+
+	def non_uniformers():
+		for key in list(World.nodes['non-uniform'].keys()):
+			if World.nodes['non-uniform'][key] is True:
+				World.processes['non-uniform'][key].execute()
+
+
+def main():
+	World.start_connection()
+	World.initialize()
+	World.prepare()
+	World.non_uniformers()
+
+
+if __name__ == '__main__':
+	World.start_connection()
+	World.initialize()
+	World.prepare()
+	if World.SWITCH == True:
+		World.non_uniformers()	

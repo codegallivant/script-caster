@@ -13,10 +13,12 @@ operations = {
 			"True": """
 
 print("Non-Uniform Operations Gateway is OPEN. Initiating Process...")
-protectConnection('''from conexec import *''')
+protect_connection('''
+conexec.main()
+''')
 print("Process has ended. Instructions Executed.")
 Exterior.SWITCH=False
-protectConnection('''sheet.update_cell(2,1,"False")''')
+protect_connection('''sheet.update_cell(2,1,"False")''')
 print("Non-Uniform Operations Gateway has been CLOSED.")
 		
 			""",
@@ -82,14 +84,14 @@ try:
 	exec(f'''
 {Exterior.CODE}
 ''')
-	protectConnection('''sheet.update_cell(2,6,"Success")''')
+	protect_connection('''sheet.update_cell(2,6,"Success")''')
 	print("Code Execution was Successful!")
 except:
-	protectConnection('''sheet.update_cell(2,6,"Failure")''')
+	protect_connection('''sheet.update_cell(2,6,"Failure")''')
 	print("Code Execution gave an exception! Please check the code again and retry.")
 
 Exterior.CODEXEC=False
-protectConnection('''sheet.update_cell(2,4,"False")''')
+protect_connection('''sheet.update_cell(2,4,"False")''')
 print("Code Execution Gateway has been CLOSED.")
 
 			""",
@@ -107,6 +109,19 @@ print("Code Execution Gateway has been CLOSED.")
 		"OPENCLICKER":"""
 		""",
 		"SCREENLOG" :"""
+
+print("Taking screenshot...")
+im1 = pag.screenshot()
+im_name = "SCREEN_LOG " + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H-%M-%S') + " .jpg"
+print(f"'{im_name}' created")
+im1.save(rf"C:\\Users\\rekhasha\\OneDrive - AMDOCS\\Backup Folders\\Desktop\\Janak_HTML_Programs\\mental_out\\Screen_Logs\\{im_name}")
+print(f"Uploading '{im_name}' to Exterior...")
+# try:
+gprocesses.upload_file('Exterior/Screen_Logs',r"C:\\Users\\rekhasha\\OneDrive - AMDOCS\\Backup Folders\\Desktop\\Janak_HTML_Programs\\mental_out\\Screen_Logs", im_name)
+print("Screenshot successfully uploaded to Exterior/Screen_Logs")
+# except:
+# 	print("The file could not be uploaded to Exterior/Screen_Logs")
+
 		""", 
 		"DESKRIGHT":"""
 print("Switching to next virtual desktop")

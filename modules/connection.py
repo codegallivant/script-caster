@@ -6,7 +6,7 @@ def connect():
 	scope = ['https://spreadsheets.google.com/feeds',
 	'https://www.googleapis.com/auth/drive']
 #	print("Authenticating...")
-	creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+	creds = ServiceAccountCredentials.from_json_keyfile_name('service_account_credentials.json', scope)
 	client = gspread.authorize(creds)
 #	print("Authentication Successful!")
 	return client
