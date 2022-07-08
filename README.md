@@ -137,6 +137,8 @@ python trigger.py
 - `modules/connection.py`
 - `modules/gprocesses.py`
 
+<br>
+
 ### 1. `modules/operations.py`
 Here, in `modules/operations.py` you will be able to decide actions taken when you activate parameters in Exterior.
 To understand these, you will first have to understand 2 kinds of operations.
