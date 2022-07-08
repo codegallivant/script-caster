@@ -29,8 +29,9 @@ def authenticate_client():
 	    gauth.Authorize()
 
 	# Save the current credentials to a file
-	gauth.SaveCredentialsFile("mycreds.txt")  
+	gauth.SaveCredentialsFile("mycreds.txt")  #Note that credentials will expire after some time and may not refresh. When this happens, delete the mycreds.txt file and run the program again. A new and valid mycreds.txt will automatically be created.
 	client.drive = GoogleDrive(client.gauth)
+
 
 
 def list_files(folder_id):
@@ -89,6 +90,9 @@ def upload_file(target_folder_path , home_path, file_name):
 	f.SetContentFile(os.path.join(home_path, file_name)) 
 	f.Upload()
 
+# Example: upload_file('<drive_folder_name>/<drive_folder_name>/.../<file_name>',rf"C:/.../<system_directory_name>", "<file_name>")
+
+
 
 def download_file(target_file_path, home_path):
 
@@ -107,11 +111,11 @@ def download_file(target_file_path, home_path):
 	os.chdir(working_path)
 
 
-# download_file("Exterior/Screen_Logs/SCREEN_LOG 2020-08-03 22-30-54 .jpg", "C:\\Users\\rekhasha\\OneDrive - AMDOCS\\Backup Folders\\Desktop\\Janak_HTML_Programs\\mental_out\\TestDownloads")
+# Example: download_file("<drive_folder_name>/<drive_folder_name>/.../<file_name>", "C:/.../<system_directory_name>")
 
 
 def download_folder(target_folder_path, home_path, files_only = True):
-
+	#If files_only = True, only files will be downloaded. If files_only = False, parent folder containing the files will be downloaded along with its contents.
 	authenticate_client()
 	
 	working_path = os.getcwd()
@@ -136,4 +140,4 @@ def download_folder(target_folder_path, home_path, files_only = True):
 		os.chdir(working_path)
 
 
-# download_folder ("Exterior/Screen_Logs", "C:\\Users\\rekhasha\\OneDrive - AMDOCS\\Backup Folders\\Desktop\\Janak_HTML_Programs\\mental_out\\TestDownloads")
+# download_folder ("<drive_folder_name>/<drive_folder_name>/.../<drive_folder_name>", "C:/.../<system_directory_name>")

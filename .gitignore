@@ -1,0 +1,13 @@
+# After creating a service account for this program in Google API Console, download the credentials file as - 
+service_account_credentials.json
+
+# mycreds.txt is created automatically by the authenticate_client() function in modules/gprocesses.py. If an error ever appears due to the credentials expiring or something, delete the file and run the program again
+mycreds.txt 
+modules/mycreds.txt
+
+# Read readme.md to know how to set up user_constants.py
+modules/USER_CONSTANTS.py 
+
+
+__pycache__/
+modules/__pycache__/

@@ -1,6 +1,10 @@
 from modules.common import *
 
 
+def protect_connection(code): #The real protect_connection function is in trigger.py. The function in this file only serves for when testing conexec.py separately, so that errors dont appear when the function is called in operations.py . When trigger.py is run, it imports this file and this function but this function later gets overwritten by the real function.
+	exec(code)
+
+
 class Job:
 		def __init__(self, code):
 			self.code = code
@@ -19,17 +23,17 @@ class World:
 		# client = gspread.authorize(creds)
 		World.client = connection.connect()
 		# sheet = client.open('Exterior').worksheet(socket.gethostname())
-		World.sheet = connection.opensheet('Exterior',socket.gethostname(),World.client)
+		# World.sheet = connection.opensheet('Exterior',socket.gethostname(),World.client)
+		World.sheet = connection.opensheet('Exterior', USER_CONSTANTS.COMPUTER_NAME, World.client)
 		World.data = World.sheet.get_all_records()[0]
-		World.DEBUGMODE = World.data["DEBUGMODE"]
 
 
 	def initialize():
 
-		if World.DEBUGMODE=='True':
+		if USER_CONSTANTS.DEBUG_MODE==True:
 			print(World.data)
 
-		for col in range(0,len(World.data)-1):
+		for col in range(0,len(World.data)):
 			# var=sheet.cell(1,col).value 	
 			var = list(World.data.keys())[col]
 			exec(f"World.{var} = World.data[var]")	
@@ -45,7 +49,7 @@ else:
 	pass
 		'''
 			)
-			if World.DEBUGMODE=='True' or World.DEBUGMODE == True:
+			if USER_CONSTANTS.DEBUG_MODE == True:
 				print(f"{var}={World.data[var]}")
 
 

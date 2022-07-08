@@ -2,16 +2,46 @@ from modules.common import *
 
 
 hidden = None
-the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
-computer_name = socket.gethostname()
-
+"""Doesnt work anymore - 
+# the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
 #Initializing V100 Emulation
-kernel32 = ctypes.WinDLL('kernel32') 
-hStdOut = kernel32.GetStdHandle(-11)
-mode = ctypes.c_ulong()
-kernel32.GetConsoleMode(hStdOut, ctypes.byref(mode))
-mode.value |= 4
-kernel32.SetConsoleMode(hStdOut, mode)
+# kernel32 = ctypes.WinDLL('kernel32') 
+# hStdOut = kernel32.GetStdHandle(-11)
+# mode = ctypes.c_ulong()
+# kernel32.GetConsoleMode(hStdOut, ctypes.byref(mode))
+# mode.value |= 4
+# kernel32.SetConsoleMode(hStdOut, mode)
+"""
+
+the_program_to_hide = win32gui.GetForegroundWindow() 
+
+ctypes.windll.kernel32.SetConsoleTitleW("MENTAL-OUT")
+# COMPUTER_NAME = socket.gethostname()
+
+def end_program_from_systray(systray):
+	os._exit(0)
+
+def hide_program(systray):
+	win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
+hide_program(None)
+
+def show_program(systray):
+	win32gui.ShowWindow(the_program_to_hide , win32con.SW_SHOW)
+
+#Adding app to system tray
+menu_options = (
+	("Hide Console", None, hide_program),
+	("Show Console", None, show_program),)
+
+systray = SysTrayIcon(f"favicon.ico", "MENTAL-OUT", menu_options, on_quit=end_program_from_systray)
+systray.start()
+
+#Ensuring systray gets appropriately dismantled when program ends
+def exit_handler():
+	systray.shutdown()
+
+atexit.register(exit_handler)
+
 
 
 class Exterior:
@@ -36,7 +66,7 @@ class bcolors:
 ▒█░░▒█ ▒█▄▄▄ ▒█░░▀█ ░▒█░░ ▒█░▒█ ▒█▄▄█ ░░ ▒█▄▄▄█ ░▀▄▄▀ ░▒█░░
 '''
 
-print(f'\n\n{bcolors.OKGREEN}Welcome {bcolors.HEADER}{computer_name}{bcolors.ENDC} {bcolors.OKGREEN}!{bcolors.ENDC}')
+print(f'\n\n{bcolors.OKGREEN}Welcome {bcolors.HEADER}{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC} {bcolors.OKGREEN}!{bcolors.ENDC}')
 
 
 class Job:
@@ -79,11 +109,11 @@ def protect_connection(codetext):
 	try:
 		exec(codetext)
 		mainlogger.deletelog()
-		mainlogger.updatelog(f'{bcolors.HEADER}{computer_name}{bcolors.ENDC}{bcolors.OKBLUE} is currently connected to {bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC}{bcolors.ENDC}')
+		mainlogger.updatelog(f'{bcolors.HEADER}{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC}{bcolors.OKBLUE} is currently connected to {bcolors.HEADER}Exterior/{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC}{bcolors.ENDC}')
 	except:
 		mainlogger.deletelog()
 		refreshlogger.deletelog()
-		mainlogger.updatelog(f'{bcolors.FAIL}\nALERT: \nInternet issues have been detected. \n{bcolors.HEADER}{computer_name}{bcolors.ENDC}{bcolors.FAIL} is currently disconnected from {bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC} \n{bcolors.OKGREEN}Restarting Program...{bcolors.ENDC}{bcolors.ENDC}')
+		mainlogger.updatelog(f'{bcolors.FAIL}\nALERT: \nInternet issues have been detected. \n{bcolors.HEADER}{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC}{bcolors.FAIL} is currently disconnected from {bcolors.HEADER}Exterior/{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC} \n{bcolors.OKGREEN}Restarting program...{bcolors.ENDC}{bcolors.ENDC}')
 		refresh.proceed = False
 		time.sleep(5)
 		restartprogram()
@@ -112,13 +142,12 @@ while True:
 
 while True:		
 	try:
-		sheet = connection.opensheet("Exterior",computer_name, client)
-		print(f"{bcolors.OKGREEN}Connected with {bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC}{bcolors.ENDC}")
+		sheet = connection.opensheet("Exterior",USER_CONSTANTS.COMPUTER_NAME, client)
+		print(f"{bcolors.OKGREEN}Connected with {bcolors.HEADER}Exterior/{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC}{bcolors.ENDC}")
 		break
 	except:
-		countdown(60, f"{bcolors.HEADER}Exterior/{computer_name}{bcolors.ENDC}{bcolors.WARNING} could not be opened. Next Attempt:{bcolors.ENDC}")
+		countdown(60, f"{bcolors.HEADER}Exterior/{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC}{bcolors.WARNING} could not be opened. Next Attempt:{bcolors.ENDC}")
 
-win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
 
 processes = deepcopy(operations)
 
@@ -193,7 +222,7 @@ displaylog.thisloggerlog = {key}logger.getlog()
 		print(f"""
 {bcolors.CLRSCRN}
 {bcolors.HEADER}{bcolors.MENTALOUT}{bcolors.ENDC}
-{bcolors.HEADER}Welcome {computer_name} !{bcolors.ENDC}
+{bcolors.HEADER}Welcome {USER_CONSTANTS.COMPUTER_NAME} !{bcolors.ENDC}
 {mainlogger.getlog()} 
 {refreshlogger.getlog()}
 \n\n
