@@ -5,7 +5,7 @@ operations = {
 
 #UNIFORM Operations Start Here:
 
-	"uniform" : {
+	"UNIFORM" : {
 
 
 		"SWITCH": {
@@ -17,7 +17,7 @@ protect_connection('''
 conexec.main()
 ''')
 print("Process has ended. Instructions Executed.")
-Exterior.SWITCH=False
+Exterior.records['SWITCH']=False
 protect_connection('''sheet.update_cell(2,1,"False")''')
 print("Non-Uniform Operations Gateway has been CLOSED.")
 		
@@ -105,26 +105,26 @@ print("Code Execution Gateway has been CLOSED.")
 
 #NON-UNIFORM Operations Start Here:
 
-	"non-uniform" : {
-		"AUTOSAVESHOT": """
+	"NON-UNIFORM" : {
+# 		"AUTOSAVESHOT": """
 
-def saveshot(): 
-	print("Taking screenshot...")
-	im1 = pag.screenshot()
-	im_name = "Screenshot " + USER_CONSTANTS.COMPUTER_NAME + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H-%M-%S') + " .jpg"
-	path = f"{USER_CONSTANTS.PROJECT_PATH}/Screen_Logs"
-	im1.save(rf"{path}/{im_name}")
-	print(f"'{im_name}' created.")
-	print(f"Uploading '{im_name}' to Exterior...")
-	protect_connection(f"gprocesses.upload_file('Exterior/Screen_Logs/PrntScrn','{path}', '{im_name}')")
-	# protect_connection(f"print({path})")
-	print("Screenshot successfully uploaded to Exterior/Screen_Logs/PrntScrn .")
+# def saveshot(): 
+# 	print("Taking screenshot...")
+# 	im1 = pag.screenshot()
+# 	im_name = "Screenshot " + USER_CONSTANTS.COMPUTER_NAME + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H-%M-%S') + " .jpg"
+# 	path = f"{USER_CONSTANTS.PROJECT_PATH}/Screen_Logs"
+# 	im1.save(rf"{path}/{im_name}")
+# 	print(f"'{im_name}' created.")
+# 	print(f"Uploading '{im_name}' to Exterior...")
+# 	protect_connection(f"gprocesses.upload_file('Exterior/Screen_Logs/PrntScrn','{path}', '{im_name}')")
+# 	# protect_connection(f"print({path})")
+# 	print("Screenshot successfully uploaded to Exterior/Screen_Logs/PrntScrn .")
 
-print("Adding hotkey for print_screen...")
-keyboard.add_hotkey('print_screen', saveshot)
-print("Hotkey for print_screen added.")
+# print("Adding hotkey for print_screen...")
+# keyboard.add_hotkey('print_screen', saveshot)
+# print("Hotkey for print_screen added.")
 
-			""",
+# 			""",
 		"BLOCKINPUT": """
 print("Blockinput mecha started.")
 ok = ctypes.windll.user32.BlockInput(True)

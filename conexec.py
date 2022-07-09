@@ -57,16 +57,16 @@ else:
 		# global operations
 		World.nodes = deepcopy(operations)
 		World.processes = deepcopy(operations)
-		for key in list(operations['non-uniform'].keys()):
-			exec(f"World.nodes['non-uniform'][key] = World.{key}")
-			World.processes['non-uniform'][key] = Job('')
-			World.processes['non-uniform'][key].code=operations['non-uniform'][key]
+		for key in list(operations['NON-UNIFORM'].keys()):
+			exec(f"World.nodes['NON-UNIFORM'][key] = World.{key}")
+			World.processes['NON-UNIFORM'][key] = Job('')
+			World.processes['NON-UNIFORM'][key].code=operations['NON-UNIFORM'][key]
 
 
 	def non_uniformers():
-		for key in list(World.nodes['non-uniform'].keys()):
-			if World.nodes['non-uniform'][key] is True:
-				World.processes['non-uniform'][key].execute()
+		for key in list(World.nodes['NON-UNIFORM'].keys()):
+			if World.nodes['NON-UNIFORM'][key] is True:
+				World.processes['NON-UNIFORM'][key].execute()
 
 
 def main():

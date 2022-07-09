@@ -46,11 +46,11 @@ This is a python application that enables a user to control their personal compu
 <br>
 
 ### 2. Setting up Exterior (Google Drive folder)
-This is a Google Drive folder. This component of the project is helps in using `modules/gprocesses.py`, which helps in uploading files to and downloading files from your Google Drive. This is also required to use the non-uniform operation parameter `SCREENLOG` and `AUTOSAVESHOT`. This component cannot be downloaded from GitHub. To create it - 
+This is a Google Drive folder. This component of the project is helps in using `modules/gprocesses.py`, which helps in uploading files to and downloading files from your Google Drive. This is also required to use the non-uniform operation parameter `SCREENLOG`. This component cannot be downloaded from GitHub. To create it - 
 1. Login to your Google account and go to Google Drive
 2. Create a folder called `Exterior`
 3. Add the Exterior spreadsheet in this folder
-4. In order to be able to use the uniform operation parameter `SCREENLOG` and `AUTOSAVESHOT`, create folders named `Screen_Logs` and `PrntScrn` respectively inside this folder.
+4. In order to be able to use the uniform operation parameter `SCREENLOG`, create a folder named `Screen_Logs` inside this folder.
 
 <br>
 
@@ -85,9 +85,9 @@ Parameter values can be entered - `True` (ON) or `False` (OFF). Some parameters 
   - `SCREENLOG`
     - If True, takes a screenshot and uploads it to Google Drive, in Exterior/Screen_Logs
     - If False, does nothing
-  - `AUTOSAVESHOT`
+<!--   - `AUTOSAVESHOT`
     - If True, whenever you press PrntScrn on your keyboard, it takes a screenshot and uploads it to Google Drive, in Exterior/PrntScrn
-    - If False, does nothing
+    - If False, does nothing -->
   - `BLOCKINPUT`
     - If True, blocks all input device functioning
     - If False, does nothing

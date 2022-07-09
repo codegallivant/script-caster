@@ -1,7 +1,7 @@
 from modules.common import *
 
 
-hidden = None
+# hidden = None
 """Doesnt work anymore - 
 # the_program_to_hide = ctypes.windll.kernel32.GetConsoleWindow()
 #Initializing V100 Emulation
@@ -15,8 +15,10 @@ hidden = None
 
 the_program_to_hide = win32gui.GetForegroundWindow() 
 
+os.chdir(USER_CONSTANTS.PROJECT_PATH)
+
 ctypes.windll.kernel32.SetConsoleTitleW("MENTAL-OUT")
-# COMPUTER_NAME = socket.gethostname()
+
 
 def end_program_from_systray(systray):
 	os._exit(0)
@@ -45,7 +47,9 @@ atexit.register(exit_handler)
 
 
 class Exterior:
- 	pass
+ 	uniform_thread_scripts = dict()
+ 	processes = dict()
+ 	records = None
 
 
 #Defining ANSI Colour Codes and MENTALOUT Header Text:
@@ -99,6 +103,9 @@ class Logger():
 		return totalLog
 
 
+
+
+
 def restartprogram():
 	os.execl(sys.executable, sys.executable, *sys.argv)
 
@@ -149,43 +156,80 @@ while True:
 		countdown(60, f"{bcolors.HEADER}Exterior/{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC}{bcolors.WARNING} could not be opened. Next Attempt:{bcolors.ENDC}")
 
 
-processes = deepcopy(operations)
 
-for key in list(operations['uniform'].keys()):
-	processes['uniform'][key] = Job('')
-	processes['uniform'][key].code=(f"""
+
+for key in list(operations["UNIFORM"].keys()):
+	Exterior.uniform_thread_scripts[key] = Job('')
+	Exterior.uniform_thread_scripts[key].code=(f"""
 global {key}logger
 {key}logger = Logger('')
 print = {key}logger.updatelog
-while True:
-	while refresh.proceed is True:
-		if Exterior.{key} == True or Exterior.{key} == 'True':
-			# screenlock.acquire()
-			exec(operations['uniform']['{key}']["True"])
-			# screenlock.release()
-		elif Exterior.{key} == False or Exterior.{key} == 'False':
-			exec(operations['uniform']['{key}']["False"])
-		else:
-			pass
+while refresh.proceed is True:
+	if Exterior.records['{key}'] == True or Exterior.records['{key}'] == 'True':
+		# screenlock.acquire()
+		exec(operations["UNIFORM"]['{key}']["True"])
+		# screenlock.release()
+	elif Exterior.records['{key}'] == False or Exterior.records['{key}'] == 'False':
+		# exec(operations["UNIFORM"]['{key}']["False"])
+		break
+	else:
+		pass
 """)
+
 
 mainlogger=Logger('')
 refreshlogger=Logger('')
-
-for key in list(operations['uniform'].keys()):
+for key in list(operations["UNIFORM"].keys()):
+	# print(str(key))
 	exec(f"{key}logger=Logger('')")
+
+
+def execute_process(name):
+	Exterior.uniform_thread_scripts[name].execute()
+
 
 
 def refresh():
 	global refreshlogger
 	print = refreshlogger.updatelog
-	refresh.proceed=False
+	refresh.proceed=True
 	refresh.connected = None
-	Exterior.records = None
 	while True:
 		protect_connection('Exterior.records = sheet.get_all_records()[0]')
 		for key in list(Exterior.records.keys()):
 			exec(f"Exterior.{key}=Exterior.records[key]")
+		# print(str(Exterior.scripts))
+		# print(str(Exterior.processes))
+		# print(str(list(Exterior.processes.keys())))
+		for key in list(Exterior.uniform_thread_scripts.keys()):
+			if Exterior.records[key] == True or Exterior.records[key] == 'True':
+				if key in Exterior.processes:
+					if not Exterior.processes[key].is_alive(): #Check if thread is alive
+						Exterior.processes[key] = threading.Thread(target = execute_process, args=[key])
+						Exterior.processes[key].start()
+						Exterior.processes[key].name = key
+				else:
+					Exterior.processes[key] = threading.Thread(target = execute_process, args=[key])
+					Exterior.processes[key].start()
+					Exterior.processes[key].name = key
+			elif Exterior.records[key]== False or Exterior.records[key]=='False':
+				pass
+			else:
+				pass
+# 			exec(f"""
+# # print(f"entered loop")
+# if(Exterior.{key}== True or Exterior.{key}=='True'):
+# 	# print(f"starting {key}")
+# 	if not Exterior.processes[key] in globals():
+# 		Exterior.processes[key] = threading.Thread(target = execute_process, args=[key])
+# 	if not Exterior.processes[key].is_alive():
+# 		Exterior.processes[key].start()
+# 	# print(f"started {key}")
+# elif Exterior.{key}== False or Exterior.{key}=='False':
+# 	pass
+# else:
+# 	pass
+# """)
 		refresh.proceed=True
 		countdown(Exterior.CHECKINTERVAL, f"{bcolors.OKGREEN}Next Request In:{bcolors.ENDC}", logger=refreshlogger)
 
@@ -198,7 +242,7 @@ def displaylog():
 	global refreshlogger
 	global mainlogger
 
-	for key in list(operations['uniform'].keys()):
+	for key in list(operations["UNIFORM"].keys()):
 		exec(f"""
 global {key}logger
 """)
@@ -207,12 +251,13 @@ global {key}logger
 
 		displaylog.toprint=""""""
 
-		for key in list(operations['uniform'].keys()):
-			exec(f"""
+		for key in list(operations["UNIFORM"].keys()):
+			if Exterior.records != None:	
+				if Exterior.records[key] == True or Exterior.records[key] == 'True':
+					exec(f"""
 displaylog.thisloggerlog = {key}logger.getlog()
 """)		
-
-			displaylog.toprint+=(f"""
+					displaylog.toprint+=(f"""
 {bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}{key}{bcolors.ENDC} 
 {displaylog.thisloggerlog}
 \n
@@ -232,15 +277,11 @@ displaylog.thisloggerlog = {key}logger.getlog()
 """)
 		
 
-def executeProcess(name):
-	processes['uniform'][name].execute()
 
+refresh_process = threading.Thread(target = refresh)
 
-def main():
-	threading.Thread(target = refresh).start()
-	for key in list(processes['uniform']):
-		threading.Thread(target = executeProcess, args=[key]).start()
-	threading.Thread(target = displaylog).start()
+displaylog_process = threading.Thread(target = displaylog)
 
-
-main()
+if __name__ == '__main__':    
+	refresh_process.start()
+	displaylog_process.start()
