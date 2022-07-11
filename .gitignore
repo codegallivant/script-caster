@@ -8,5 +8,9 @@ Creds/mycreds.txt
 USER_CONSTANTS.py 
 
 
+# Operations file
+user_scripts/user_scripts_file.py
+
+
 __pycache__/
 

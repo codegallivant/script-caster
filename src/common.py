@@ -16,6 +16,8 @@ import datetime
 import keyboard
 from infi.systray import SysTrayIcon
 import atexit
+import subprocess
+
 
 # Operations Imports
 from pydrive.drive import GoogleDrive 
@@ -26,9 +28,7 @@ from pydrive.auth import GoogleAuth
 import USER_CONSTANTS
 import ggl_api.exterior_connection as exterior_connection
 import ggl_api.gdprocesses as gdprocesses
-from user_scripts.user_scripts import user_scripts
+import src.user_scripts_compiler as user_scripts_compiler
 
-# Always import last:
-import conexec
 
 		

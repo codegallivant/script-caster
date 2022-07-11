@@ -25,7 +25,7 @@ def end_program_from_systray(systray):
 
 def hide_program(systray):
 	win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
-hide_program(None)
+# hide_program(None)
 
 def show_program(systray):
 	win32gui.ShowWindow(the_program_to_hide , win32con.SW_SHOW)
@@ -156,66 +156,84 @@ while True:
 		countdown(60, f"{bcolors.HEADER}Exterior/{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC}{bcolors.WARNING} could not be opened. Next Attempt:{bcolors.ENDC}")
 
 
-
-
-for key in list(user_scripts["UNIFORM"].keys()):
-	Exterior.uniform_thread_scripts[key] = Job('')
-	Exterior.uniform_thread_scripts[key].code=(f"""
-global {key}logger
-{key}logger = Logger('')
-print = {key}logger.updatelog
-while refresh.proceed is True:
-	if Exterior.records['{key}'] == True or Exterior.records['{key}'] == 'True':
-		# screenlock.acquire()
-		# exec(user_scripts["UNIFORM"]['{key}'])
-		exec(user_scripts["UNIFORM"]['{key}']["True"])
-		# screenlock.release()
-	elif Exterior.records['{key}'] == False or Exterior.records['{key}'] == 'False':
-		# exec(user_scripts["UNIFORM"]['{key}']["False"])
+while True:
+	try: 
+		print(f"\n{bcolors.OKBLUE}Fetching user-scripts from {bcolors.HEADER}GitHub/{USER_CONSTANTS.USERNAME}/{USER_CONSTANTS.OPS_REPO_NAME}{bcolors.ENDC}...{bcolors.ENDC}")
+		user_scripts_compiler.update_scripts(USER_CONSTANTS.ACCESS_TOKEN, USER_CONSTANTS.USERNAME, USER_CONSTANTS.OPS_REPO_NAME, f"{USER_CONSTANTS.PROJECT_PATH}/user_scripts/user_scripts_file.py")
+		user_scripts = user_scripts_compiler.get_scripts_dict()
 		break
-	else:
-		pass
-""")
+	except:
+		countdown(60, f"{bcolors.WARNING}Failed to fetch user-scripts from {bcolors.HEADER}GitHub/{USER_CONSTANTS.USERNAME}/{USER_CONSTANTS.OPS_REPO_NAME}{bcolors.ENDC}.{bcolors.WARNING} Next Attempt:{bcolors.ENDC}")
+
+
+# for key in list(user_scripts.keys()):
+# 	Exterior.uniform_thread_scripts[key] = Job('')
+# 	Exterior.uniform_thread_scripts[key].code=(f"""
+# global {key}logger
+# {key}logger = Logger('')
+# print = {key}logger.updatelog
+# while refresh.proceed is True:
+# 	if Exterior.records['{key}'] == True or Exterior.records['{key}'] == 'True':
+# 		# screenlock.acquire()
+# 		exec(user_scripts['{key}'])
+# 		protect_connection(f'''exterior_connection.update_parameter_cell_value(sheet, {key}, "False")''')
+# 		break
+# 		# screenlock.release()
+# 	elif Exterior.records['{key}'] == False or Exterior.records['{key}'] == 'False':
+# 		break
+# 	else:
+# 		pass
+# """)
 
 
 mainlogger=Logger('')
 refreshlogger=Logger('')
-for key in list(user_scripts["UNIFORM"].keys()):
+for key in list(user_scripts.keys()):
 	# print(str(key))
 	exec(f"{key}logger=Logger('')")
 
 
-def execute_process(name):
-	Exterior.uniform_thread_scripts[name].execute()
+# def execute_process(name):
+# 	Exterior.uniform_thread_scripts[name].execute()
 
 
 
 def refresh():
 	global refreshlogger
 	print = refreshlogger.updatelog
+	global sheet
 	refresh.proceed=True
 	refresh.connected = None
 	while True:
 		protect_connection('Exterior.records = sheet.get_all_records()[0]')
-		for key in list(Exterior.records.keys()):
-			exec(f"Exterior.{key}=Exterior.records[key]")
-		for key in list(Exterior.uniform_thread_scripts.keys()):
+		# for key in list(Exterior.records.keys()):
+			# exec(f"Exterior.{key}=Exterior.records[key]")
+		# for key in list(Exterior.uniform_thread_scripts.keys()):
+		for key in list(user_scripts.keys()):
 			if Exterior.records[key] == True or Exterior.records[key] == 'True':
-				if key in Exterior.processes:
-					if not Exterior.processes[key].is_alive(): #Check if thread is alive
-						Exterior.processes[key] = threading.Thread(target = execute_process, args=[key])
-						Exterior.processes[key].start()
-						Exterior.processes[key].name = key
-				else:
-					Exterior.processes[key] = threading.Thread(target = execute_process, args=[key])
-					Exterior.processes[key].start()
-					Exterior.processes[key].name = key
+				if key in Exterior.processes:  #Element exists 
+					if Exterior.processes[key].poll() != None: #Thread is not running
+						protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'False')")
+						# Exterior.processes[key] = subprocess.call([sys.executable, '-c', user_scripts[key]])
+					# if not Exterior.processes[key].is_alive(): #Check if thread is alive
+						# Exterior.processes[key] = threading.Thread(target = execute_process, args=[key])
+						# Exterior.processes[key].start()
+						# Exterior.processes[key].name = key
+				else: # Element doesnt exist
+					Exterior.processes[key] = subprocess.Popen([sys.executable, '-c', user_scripts[key]])
+					# Exterior.processes[key] = threading.Thread(target = execute_process, args=[key])
+					# Exterior.processes[key].start()
+					# Exterior.processes[key].name = key
 			elif Exterior.records[key]== False or Exterior.records[key]=='False':
-				pass
+				if key in Exterior.processes:
+					if Exterior.processes[key].poll() == None: #Thread is running
+						#Kill process
+						Exterior.processes[key].terminate()
+					del Exterior.processes[key]
 			else:
 				pass
 		refresh.proceed=True
-		countdown(Exterior.CHECKINTERVAL, f"{bcolors.OKGREEN}Next Request In:{bcolors.ENDC}", logger=refreshlogger)
+		countdown(Exterior.records["CHECKINTERVAL"], f"{bcolors.OKGREEN}Next Request In:{bcolors.ENDC}", logger=refreshlogger)
 
 
 def displaylog():
@@ -226,7 +244,7 @@ def displaylog():
 	global refreshlogger
 	global mainlogger
 
-	for key in list(user_scripts["UNIFORM"].keys()):
+	for key in list(user_scripts.keys()):
 		exec(f"""
 global {key}logger
 """)
@@ -235,7 +253,7 @@ global {key}logger
 
 		displaylog.toprint=""""""
 
-		for key in list(user_scripts["UNIFORM"].keys()):
+		for key in list(user_scripts.keys()):
 			if Exterior.records != None:	
 				if Exterior.records[key] == True or Exterior.records[key] == 'True':
 					exec(f"""

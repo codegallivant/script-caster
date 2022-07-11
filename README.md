@@ -1,5 +1,9 @@
 # mental-out
 
+## Readme outdated
+
+<br><br>
+
 ###### BRIEF SUMMARY OF PROJECT:
 This is a python application that enables a user to control their personal computer remotely via Google Drive. 
 ###### COMPLETION STATUS: 
