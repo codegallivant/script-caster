@@ -28,7 +28,7 @@ This is a python application that enables a user to control their personal compu
   - pyautogui
 - Google Account
 - Google API Console Service Account
-- service_account_credentials.json file (For authenticating with Google API Console Service Account)
+- `creds/service_account_credentials.json` file (For authenticating with Google API Console Service Account)
 
 <br><br>
 
@@ -40,13 +40,13 @@ This is a python application that enables a user to control their personal compu
 1. Go to [Google's API Console](https://console.developers.google.com/) and sign in to your google account
 2. Create a project.
 3. Create a service account integrated using the Google Sheets API and Google Drive API. Download the credentials as `service_account_credentials.json` file
-4. Store the `service_account_credentials.json` file in your project root 
+4. Store the `service_account_credentials.json` file in the `creds/` folder. 
 5. Done.
 
 <br>
 
 ### 2. Setting up Exterior (Google Drive folder)
-This is a Google Drive folder. This component of the project is helps in using `modules/gprocesses.py`, which helps in uploading files to and downloading files from your Google Drive. This is also required to use the non-uniform operation parameter `SCREENLOG`. This component cannot be downloaded from GitHub. To create it - 
+This is a Google Drive folder. This component of the project is helps in using `ggl_api/gdprocesses.py`, which helps in uploading files to and downloading files from your Google Drive. This is also required to use the non-uniform operation parameter `SCREENLOG`. This component cannot be downloaded from GitHub. To create it - 
 1. Login to your Google account and go to Google Drive
 2. Create a folder called `Exterior`
 3. Add the Exterior spreadsheet in this folder
@@ -113,16 +113,16 @@ PROJECT_PATH = "C:/.../mental_out" # Path of project root folder
 DEBUG_MODE = False # Choose whether you want to see logs
 ```
 0. Download the repository.
-1. Create a file called `USER_CONSTANTS.py` in the modules folder.
+1. Create a file called `USER_CONSTANTS.py` in the root folder.
 2. Set values of `PROJECT_PATH` and `DEBUG_MODE`.
 3. You may be using multiple computers with your Exterior spreadsheet. In order to differentiate them, assign each a different `COMPUTER_CODE` and create different sheets for each of them in the Exterior spreadsheet. When you set the name of their sheet in Exterior, ensure it matches with the respective  `COMPUTER_NAME`. In the example above, the sheet's name should be `SYSTEM_0`. 
 
 <br>
 
 ### 5. Running the application
-**To run mental-out from the command line, execute the following code from the project directory -**
+**To run mental-out from the command line, execute the following code from the project root directory -**
 ```
-python trigger.py
+python main.py
 ```
 **Sidenote:** After the program starts, it automatically minimizes itself to the system tray. To see the console, right-click on the system tray icon and click `Show Console`. To quit the application, right-click on the icon in the system tray and click `Quit`.
 
@@ -130,17 +130,17 @@ python trigger.py
 <br>
 
 ## About other important files:
-- `modules/operations.py`
-- `trigger.py`
+- `user_scripts/user_scripts.py`
+- `main.py`
 - `conexec.py`
-- `common.py`
-- `modules/connection.py`
-- `modules/gprocesses.py`
+- `src/common.py`
+- `ggl_api/exterior_connection.py`
+- `ggl_api/gdprocesses.py`
 
 <br>
 
-### 1. `modules/operations.py`
-Here, in `modules/operations.py` you will be able to decide actions taken when you activate parameters in Exterior.
+### 1. `user_scripts/user_scripts.py`
+Here, in `user_scripts/user_scripts.py` you will be able to decide actions taken when you activate parameters in Exterior.
 To understand these, you will first have to understand 2 kinds of operations.
   -  **Uniform Operations** <br>
 These are tasks that take a long time to be executed. They may even go on forever.
@@ -152,34 +152,34 @@ These are tasks which take a relatively shorter time to execute. At least you co
 It is not necassary to execute non-uniform operations altogether simulataneously, since they have a short timespan. Therefore Non-Uniform operations are executed one by one.
 
 #### THE OPERATIONS DICTIONARY
-That aside, `modules/operations.py` contains a dictionary dataset called 'operations'. 'operations' consists of uniform and non-uniform subsets which then contain subsets of names of parameters. It is necassary that these names remain the same as the parameters in Exterior. All code wished to be executed for these parameters must be placed within its respective parameter subset in the operations dictionary.<br>
+That aside, `user_scripts/user_scripts.py` contains a dictionary dataset called 'operations'. 'operations' consists of uniform and non-uniform subsets which then contain subsets of names of parameters. It is necassary that these names remain the same as the parameters in Exterior. All code wished to be executed for these parameters must be placed within its respective parameter subset in the operations dictionary.<br>
 If you wish to execute it when the parameter is True, place it within the True subset of the parameter's subset. The same goes for False.
 That's all you need to do to create a new operation.
 
 <br>
 
-### 2. `trigger.py`
-**`trigger.py` can be called the main file, or the activator of the entire program.** `trigger.py` is responsible for executing uniform operations and calling `conexec.py`, which handles non-uniform operations.
+### 2. `main.py`
+**`main.py` can be called the main file, or the activator of the entire program.** `main.py` is responsible for executing uniform operations and calling `conexec.py`, which handles non-uniform operations.
 
 <br>
 
 ### 3. `conexec.py`
-`conexec.py` handles non-uniform operations, as stated before. For testing purposes, `conexec.py` is separated from `trigger.py`. Hence, `conexec.py` can be run independently and execute non-uniform operations one by one.
+`conexec.py` handles non-uniform operations, as stated before. For testing purposes, `conexec.py` is separated from `main.py`. Hence, `conexec.py` can be run independently and execute non-uniform operations one by one.
 
 <br>
 
-### 4. `common.py`
-`common.py` imports modules for `trigger.py` and `conexec.py`. All modules to be imported (Be it pip or other) in these files must be imported through `common.py` .
+### 4. `src/common.py`
+`common.py` imports modules for `main.py` and `conexec.py`. All modules to be imported (Be it pip or local) in these files must be imported through `src/common.py` .
 
 <br>
 
-### 5. `modules/connection.py`
-`modules/connection.py` holds functions that help establishing connection with the Exterior spreadsheet.
+### 5. `ggl_api/exterior_connection.py`
+`ggl_api/connection.py` holds functions that help establishing connection with the Exterior spreadsheet.
 
 <br>
 
-### 6. `modules/gprocesses.py`
-`modules/gprocesses.py` holds functions that help easily upload/download files or folders to/from Google Drive.
+### 6. `ggl_api/gdprocesses.py`
+`ggl_api/gdprocesses.py` holds functions that help easily upload/download files or folders to/from Google Drive.
 
 <br>
 <br>

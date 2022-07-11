@@ -1,7 +1,7 @@
-from modules.common import *
+from src.common import *
 
 
-def protect_connection(code): #The real protect_connection function is in trigger.py. The function in this file only serves for when testing conexec.py separately, so that errors dont appear when the function is called in operations.py . When trigger.py is run, it imports this file and this function but this function later gets overwritten by the real function.
+def protect_connection(code): #The real protect_connection function is in trigger.py. The function in this file only serves for when testing conexec.py separately, so that errors dont appear when the function is called in user_scripts.py . When trigger.py is run, it imports this file and this function but this function later gets overwritten by the real function.
 	exec(code)
 
 
@@ -21,10 +21,10 @@ class World:
 #	print("Authenticating...")
 		# creds = ServiceAccountCredentials.from_json_keyfile_name('service_account_credentials.json', scope)
 		# client = gspread.authorize(creds)
-		World.client = connection.connect()
+		World.client = exterior_connection.authenticate()
 		# sheet = client.open('Exterior').worksheet(socket.gethostname())
-		# World.sheet = connection.opensheet('Exterior',socket.gethostname(),World.client)
-		World.sheet = connection.opensheet('Exterior', USER_CONSTANTS.COMPUTER_NAME, World.client)
+		# World.sheet = exterior_connection.opensheet('Exterior',socket.gethostname(),World.client)
+		World.sheet = exterior_connection.open_sheet('Exterior', USER_CONSTANTS.COMPUTER_NAME, World.client)
 		World.data = World.sheet.get_all_records()[0]
 
 
@@ -54,13 +54,13 @@ else:
 
 
 	def prepare(): 
-		# global operations
-		World.nodes = deepcopy(operations)
-		World.processes = deepcopy(operations)
-		for key in list(operations['NON-UNIFORM'].keys()):
+		# global user_scripts
+		World.nodes = deepcopy(user_scripts)
+		World.processes = deepcopy(user_scripts)
+		for key in list(user_scripts['NON-UNIFORM'].keys()):
 			exec(f"World.nodes['NON-UNIFORM'][key] = World.{key}")
 			World.processes['NON-UNIFORM'][key] = Job('')
-			World.processes['NON-UNIFORM'][key].code=operations['NON-UNIFORM'][key]
+			World.processes['NON-UNIFORM'][key].code=user_scripts['NON-UNIFORM'][key]
 
 
 	def non_uniformers():
