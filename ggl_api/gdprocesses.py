@@ -7,6 +7,11 @@ class client:
 	pass
 
 
+
+def set_client_config_path(path_to_secrets_file):	
+	GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = path_to_secrets_file
+
+
 def authenticate_client(creds_path):
 
 	client.gauth = GoogleAuth()
