@@ -32,16 +32,18 @@ def authenticate_client(creds_path):
 	gauth.SaveCredentialsFile(creds_path)  #Note that credentials will expire after some time and may not refresh. When this happens, delete the mycreds.txt file and run the program again. A new and valid mycreds.txt will automatically be created.
 	client.drive = GoogleDrive(client.gauth)
 
+	return client
 
 
-def list_files(folder_id):
+
+def list_files(client, folder_id):
 
 	# authenticate_client()
 
 	return client.drive.ListFile({'q': f"'{folder_id}' in parents and trashed=false"}).GetList()
 
 
-def get_id(folder_path):
+def get_id(client, folder_path):
 
 	fileID = None
 
@@ -73,11 +75,11 @@ def get_id(folder_path):
 		return fileID
 
 
-def upload_file(target_folder_path , home_path, file_name):
+def upload_file(client, target_folder_path , home_path, file_name):
 
 	# authenticate_client()
 
-	target_id = get_id(target_folder_path)
+	target_id = get_id(client, target_folder_path)
 	if target_id == False:
 		print(f"[ ERROR in gprocesses.py ] : {target_folder_path} not found.")
 		return False
@@ -94,11 +96,11 @@ def upload_file(target_folder_path , home_path, file_name):
 
 
 
-def download_file(target_file_path, home_path):
+def download_file(client, target_file_path, home_path):
 
 	# authenticate_client()
 
-	target_id = get_id(target_file_path)
+	target_id = get_id(client, target_file_path)
 	if target_id == False:
 		print(f"[ ERROR in gprocesses.py ] : {target_file_path} not found.")
 		return False
@@ -114,13 +116,13 @@ def download_file(target_file_path, home_path):
 # Example: download_file("<drive_folder_name>/<drive_folder_name>/.../<file_name>", "C:/.../<system_directory_name>")
 
 
-def download_folder(target_folder_path, home_path, files_only = True):
+def download_folder(client, target_folder_path, home_path, files_only = True):
 	#If files_only = True, only files will be downloaded. If files_only = False, parent folder containing the files will be downloaded along with its contents.
 	# authenticate_client()
 	
 	working_path = os.getcwd()
 
-	target_id = get_id(target_folder_path)
+	target_id = get_id(client, target_folder_path)
 
 	if target_id == False:
 		print(f"[ ERROR in gprocesses.py ] : {target_folder_path} not found.")
@@ -132,7 +134,7 @@ def download_folder(target_folder_path, home_path, files_only = True):
 		print(home_path)
 		os.mkdir(home_path, 0o666)
 
-	files=list_files(target_id)
+	files=list_files(client, target_id)
 	for file in files:
 		file = client.drive.CreateFile({'id': file['id']})
 		os.chdir(home_path)
