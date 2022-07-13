@@ -36,11 +36,10 @@ atexit.register(exit_handler)
 
 
 class Exterior:
-     uniform_thread_scripts = dict()
-     records = None
+     records = dict()
      processes = dict()
      process_loggers = dict()
-
+     all_sheet_values = list()
 
 
 #Defining ANSI Colour Codes and MENTALOUT Header Text:
@@ -131,7 +130,7 @@ def countdown(t, message, logger=None):
 while True:
     try:
         print(f"\n{bcolors.OKBLUE}Authenticating with {bcolors.HEADER}Exterior{bcolors.ENDC}...{bcolors.ENDC}")
-        client = exterior_connection.authenticate()
+        client = exterior_connection.authenticate('creds/service_account_credentials.json')
         print(f"{bcolors.OKGREEN}Authentication Successful!{bcolors.ENDC}")
         break
     except:
@@ -171,36 +170,65 @@ def refresh():
     print = refreshlogger.updatelog
     global sheet
     global user_scripts_list
+
     while True:
-        protect_connection('Exterior.records = sheet.get_all_records()[0]')
+        
+        protect_connection(f'Exterior.all_sheet_values, Exterior.records = exterior_connection.get_parameter_cell_values(sheet)')
 
         if Exterior.records["UPDATE_LOCAL_USER_SCRIPTS"] == "ON":
+            
             print(f"{bcolors.OKBLUE}Updating {bcolors.HEADER}user-scripts{bcolors.ENDC}...", end='\r')
-            user_scripts_list = update_local_user_scripts()
-            print(f"{bcolors.HEADER}User-scripts {bcolors.OKGREEN}updated{bcolors.ENDC}.", end='\r')
-            protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'OFF')")
+            
+            try:
+            	user_scripts_list = update_local_user_scripts()
+            	protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+            except:
+            	print(f"{bcolors.HEADER}User-scripts {bcolors.OKGREEN}updated{bcolors.ENDC}.", end='\r')
+            	protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+            
+            protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'OFF', 'status', Exterior.all_sheet_values)")
 
         for key in user_scripts_list:
-        	if key in Exterior.records:
-	            if Exterior.records[key] == 'ON':
-	                if key in Exterior.processes:  #Element exists 
-	                    if Exterior.processes[key].poll() != None: #Thread is not running
-	                        protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'OFF')")
-	                        del Exterior.processes[key]
-	                else: # Element doesnt exist
-	                    new_env = os.environ.copy()
-	                    new_env["PYTHONPATH"]=USER_CONSTANTS.PROJECT_PATH
-	                    new_env["PYTHONUNBUFFERED"] = "1"
-	                    Exterior.processes[key] = subprocess.Popen(["python", f"{USER_CONSTANTS.PROJECT_PATH}/local_user_scripts/user_script_files/{key}.py"], cwd = USER_CONSTANTS.PROJECT_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, env=new_env)
-	            elif Exterior.records[key]=='OFF':
-	                if key in Exterior.processes:
-	                    if Exterior.processes[key].poll() == None: #Thread is running
-	                        #Kill process
-	                        Exterior.processes[key].terminate()
-	                    del Exterior.processes[key]
-	            else:
-	                pass
-        countdown(Exterior.records["REQUEST_INTERVAL"], f"{bcolors.OKGREEN}Next Request In:{bcolors.ENDC}", logger=refreshlogger)
+            
+            if key in Exterior.records:
+                
+                if Exterior.records[key] == 'ON':
+                    
+                    if key in Exterior.processes:  #Element exists 
+                        
+                        if Exterior.processes[key].poll() != None: #Thread is not running
+                          
+                            protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'OFF', 'status', Exterior.all_sheet_values)")
+                          
+                            if Exterior.processes[key].poll() == 0:
+                                protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                            else:
+                                protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+
+                            del Exterior.processes[key]
+
+                    else: # Element doesnt exist
+            
+                        new_env = os.environ.copy()
+                        new_env["PYTHONPATH"]=USER_CONSTANTS.PROJECT_PATH
+                        new_env["PYTHONUNBUFFERED"] = "1"
+                        Exterior.processes[key] = subprocess.Popen(["python", f"{USER_CONSTANTS.PROJECT_PATH}/local_user_scripts/user_script_files/{key}.py"], cwd = USER_CONSTANTS.PROJECT_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, env=new_env)
+            
+                        protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'Running ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+            
+                elif Exterior.records[key]=='OFF':
+            
+                    if key in Exterior.processes:
+                        if Exterior.processes[key].poll() == None: #Thread is running
+                            protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                            #Kill process
+                            Exterior.processes[key].terminate()
+                        del Exterior.processes[key]
+            
+                else:
+                    pass
+        
+        countdown(int(Exterior.records["REQUEST_INTERVAL"]), f"{bcolors.OKGREEN}Next Request In:{bcolors.ENDC}", logger=refreshlogger)
 
 
 
@@ -229,7 +257,7 @@ def displaylog():
         displaylog.toprint=""""""
 
         for key in user_scripts_list:
-            if Exterior.records != None:    
+            if len(Exterior.records)>0:    
                 if Exterior.records[key] == 'ON':
                     displaylog.thisloggerlog = Exterior.process_loggers[key].getlog()
                     displaylog.toprint+=(f"""
