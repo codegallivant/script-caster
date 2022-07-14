@@ -15,7 +15,7 @@ maintain_log = USER_CONSTANTS.SHOW_LOGS # Set default
 
 
 if USER_CONSTANTS.DISPLAY_CONSOLE == False:
-	win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
+    win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
 
 
 def set_log_bool_fromSysTray(icon, item):
@@ -36,20 +36,27 @@ def end_program_fromSysTray(icon, item):
     os._exit(0)
 
 
+def restart_program_fromSysTray(icon, item):
+	os.execl(sys.executable, sys.executable, *sys.argv)
+
+
 im = PIL.Image.open("favicon.ico")
 icon = pystray.Icon("mental-out-icon",im,"MENTAL-OUT", menu=pystray.Menu(
-    pystray.MenuItem(
-        'Maintain log',
-        set_log_bool_fromSysTray,
-        checked=lambda item: maintain_log),
     pystray.MenuItem(
         'Show console',
         set_console_display_fromSysTray,
         checked=lambda item: show_console),
     pystray.MenuItem(
+        'Maintain log',
+        set_log_bool_fromSysTray,
+        checked=lambda item: maintain_log),
+    pystray.MenuItem(
+    	'Restart',
+    	restart_program_fromSysTray),
+    pystray.MenuItem(
         'Quit',
-        end_program_fromSysTray
-        )))
+        end_program_fromSysTray)
+        ))
 
 
 
@@ -214,7 +221,10 @@ def refresh():
                 display_log_thread.start()
                 
 
-        protect_connection(f'Exterior.all_sheet_values, Exterior.records = exterior_connection.get_parameter_cell_values(sheet)')
+        protect_connection(f'Exterior.all_sheet_values, Exterior.records = exterior_connection.get_parameter_values(sheet)')
+
+        protect_connection(f"exterior_connection.update_parameter_value(sheet,'LAST_CONTACT_TIME', datetime.datetime.fromtimestamp(time.time()).strftime('%m/%d/%Y %H:%M:%S'), Exterior.all_sheet_values)")
+
 
         if Exterior.records["UPDATE_LOCAL_USER_SCRIPTS"] == "ON":
             
@@ -222,12 +232,12 @@ def refresh():
             
             try:
                 user_scripts_list = update_local_user_scripts()
-                protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                protect_connection(f"exterior_connection.update_parameter_status(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
             except:
                 print(f"{bcolors.HEADER}User-scripts {bcolors.OKGREEN}updated{bcolors.ENDC}.", end='\r')
-                protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                protect_connection(f"exterior_connection.update_parameter_status(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
             
-            protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'OFF', 'status', Exterior.all_sheet_values)")
+            protect_connection(f"exterior_connection.update_parameter_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'OFF', Exterior.all_sheet_values)")
 
         for key in user_scripts_list:
             
@@ -239,12 +249,12 @@ def refresh():
                         
                         if Exterior.processes[key].poll() != None: #Thread is not running
                           
-                            protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'OFF', 'status', Exterior.all_sheet_values)")
+                            protect_connection(f"exterior_connection.update_parameter_value(sheet, '{key}', 'OFF', Exterior.all_sheet_values)")
                           
                             if Exterior.processes[key].poll() == 0:
-                                protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                                protect_connection(f"exterior_connection.update_parameter_status(sheet, '{key}', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
                             else:
-                                protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                                protect_connection(f"exterior_connection.update_parameter_status(sheet, '{key}', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
 
                             del Exterior.processes[key]
 
@@ -255,13 +265,13 @@ def refresh():
                         new_env["PYTHONUNBUFFERED"] = "1"
                         Exterior.processes[key] = subprocess.Popen(["python", f"{USER_CONSTANTS.PROJECT_PATH}/local_user_scripts/user_script_files/{key}.py"], cwd = USER_CONSTANTS.PROJECT_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, env=new_env)
             
-                        protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'Running ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                        protect_connection(f"exterior_connection.update_parameter_status(sheet, '{key}', 'Running ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
             
                 elif Exterior.records[key]=='OFF':
             
                     if key in Exterior.processes:
                         if Exterior.processes[key].poll() == None: #Thread is running
-                            protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, '{key}', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                            protect_connection(f"exterior_connection.update_parameter_status(sheet, '{key}', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
                             #Kill process
                             Exterior.processes[key].terminate()
                         del Exterior.processes[key]
@@ -269,7 +279,7 @@ def refresh():
                 else:
                     pass
         
-        countdown(int(Exterior.records["REQUEST_INTERVAL"]), f"{bcolors.OKGREEN}Next Request In:{bcolors.ENDC}", logger=refreshlogger)
+        countdown(int(Exterior.records["REQUEST_INTERVAL"]), f"{bcolors.OKGREEN}Next request in:{bcolors.ENDC}", logger=refreshlogger)
 
 
 
@@ -314,9 +324,10 @@ def display_log():
 
         for key in user_scripts_list:
             if len(Exterior.records)>0:    
-                if Exterior.records[key] == 'ON':
-                    display_log.thisloggerlog = Exterior.process_loggers[key].getlog()
-                    display_log.toprint+=(f"""
+            	if key in Exterior.records:
+                    if Exterior.records[key] == 'ON':
+                        display_log.thisloggerlog = Exterior.process_loggers[key].getlog()
+                        display_log.toprint+=(f"""
 {bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}{key}{bcolors.ENDC} 
 {display_log.thisloggerlog}
 \n
