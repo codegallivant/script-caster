@@ -51,6 +51,7 @@ This is a python application that enables a user to remotely execute user-script
 4. Download the credentials as `service_account_credentials.json` file
 5. Store the `service_account_credentials.json` file in the `creds/` folder. 
 6. Done.
+Also see [Google APIs Terms of Service](https://developers.google.com/terms)
 
 <br>
 
