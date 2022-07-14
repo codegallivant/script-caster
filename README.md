@@ -89,7 +89,7 @@ SHOW_LOGS = True  # Recommended to be False if not viewing logs. Otherwise resou
 # GitHub Credentials
 USERNAME = "<username_of_repo_holder>"  
 OPS_REPO_NAME = "<repo_name>" 
-ACCESS_TOKEN = "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" #For accessing private repos. Go to Developer Settings in Settings of your GitHub account to create a GitHub Personal Access Token. If you are using a public git repo, you can set ACCESS_TOKEN to None
+ACCESS_TOKEN = "<access_token" # Access token is required for accessing private repos. Go to Developer Settings in Settings of your GitHub account to create a GitHub Personal Access Token. If you are using a public git repo, you can set ACCESS_TOKEN to None
 
 ```
 0. Download the repository.
