@@ -6,7 +6,8 @@ the_program_to_hide = win32gui.GetForegroundWindow()
 
 os.chdir(USER_CONSTANTS.PROJECT_PATH)
 
-ctypes.windll.kernel32.SetConsoleTitleW("MENTAL-OUT")
+ctypes.windll.kernel32.SetConsoleTitleW("SCRIPT-CASTER")
+
 
 
 
@@ -37,11 +38,11 @@ def end_program_fromSysTray(icon, item):
 
 
 def restart_program_fromSysTray(icon, item):
-	os.execl(sys.executable, sys.executable, *sys.argv)
+    os.execl(sys.executable, sys.executable, *sys.argv)
 
 
 im = PIL.Image.open("favicon.ico")
-icon = pystray.Icon("mental-out-icon",im,"MENTAL-OUT", menu=pystray.Menu(
+icon = pystray.Icon("script-caster-icon",im,"SCRIPT-CASTER", menu=pystray.Menu(
     pystray.MenuItem(
         'Show console',
         set_console_display_fromSysTray,
@@ -51,12 +52,13 @@ icon = pystray.Icon("mental-out-icon",im,"MENTAL-OUT", menu=pystray.Menu(
         set_log_bool_fromSysTray,
         checked=lambda item: maintain_log),
     pystray.MenuItem(
-    	'Restart',
-    	restart_program_fromSysTray),
+        'Restart',
+        restart_program_fromSysTray),
     pystray.MenuItem(
         'Quit',
         end_program_fromSysTray)
         ))
+
 
 
 
@@ -67,7 +69,8 @@ class Exterior:
      all_sheet_values = list()
 
 
-#Defining ANSI Colour Codes and MENTALOUT Header Text:
+
+#Defining ANSI Colour Codes and SCRIPTCASTER Header Text:
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -78,12 +81,12 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     CLRSCRN = '\033c'
-    MENTALOUT ='''
-
-▒█▀▄▀█ ▒█▀▀▀ ▒█▄░▒█ ▀▀█▀▀ ░█▀▀█ ▒█░░░ ░░ ▒█▀▀▀█ ▒█░▒█ ▀▀█▀▀ 
-▒█▒█▒█ ▒█▀▀▀ ▒█▒█▒█ ░▒█░░ ▒█▄▄█ ▒█░░░ ▀▀ ▒█░░▒█ ▒█░▒█ ░▒█░░ 
-▒█░░▒█ ▒█▄▄▄ ▒█░░▀█ ░▒█░░ ▒█░▒█ ▒█▄▄█ ░░ ▒█▄▄▄█ ░▀▄▄▀ ░▒█░░
+    SCRIPTCASTER = r'''
+ ___  ___  ___ _  __  ___     ___  __   ___ ___  ___  ___ 
+|__  |    |__/ | |__]  |  __ |    |__| |__   |  |___ |__/ 
+___| |___ |  \ | |     |     |___ |  | ___|  |  |___ |  \
 '''
+
 
 print(f'\n\n{bcolors.OKGREEN}Welcome {bcolors.HEADER}{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC} {bcolors.OKGREEN}!{bcolors.ENDC}')
 
@@ -154,6 +157,7 @@ def countdown(t, message, logger=None):
 
 
 
+
 while True:
     try:
         print(f"\n{bcolors.OKBLUE}Authenticating with {bcolors.HEADER}Exterior{bcolors.ENDC}...{bcolors.ENDC}")
@@ -174,6 +178,7 @@ while True:
 
 
 
+
 def update_local_user_scripts():
     user_scripts_list = user_scripts_compiler.update_scripts(USER_CONSTANTS.ACCESS_TOKEN, USER_CONSTANTS.USERNAME, USER_CONSTANTS.OPS_REPO_NAME, f"{USER_CONSTANTS.PROJECT_PATH}/local_user_scripts")
     return  user_scripts_list
@@ -188,10 +193,13 @@ while True:
         countdown(60, f"{bcolors.WARNING}Failed to fetch user-scripts from {bcolors.HEADER}GitHub/{USER_CONSTANTS.USERNAME}/{USER_CONSTANTS.OPS_REPO_NAME}{bcolors.ENDC}.{bcolors.WARNING} Next Attempt:{bcolors.ENDC}")
 
 
+
+
 mainlogger=Logger('')
 refreshlogger=Logger('')
 for key in user_scripts_list:
     Exterior.process_loggers[key] = Logger('')
+
 
 
 
@@ -324,7 +332,7 @@ def display_log():
 
         for key in user_scripts_list:
             if len(Exterior.records)>0:    
-            	if key in Exterior.records:
+                if key in Exterior.records:
                     if Exterior.records[key] == 'ON':
                         display_log.thisloggerlog = Exterior.process_loggers[key].getlog()
                         display_log.toprint+=(f"""
@@ -336,14 +344,13 @@ def display_log():
 
         print(f"""
 {bcolors.CLRSCRN}
-{bcolors.HEADER}{bcolors.MENTALOUT}{bcolors.ENDC}
-{bcolors.HEADER}Welcome {USER_CONSTANTS.COMPUTER_NAME} !{bcolors.ENDC}
+{bcolors.WARNING}{bcolors.SCRIPTCASTER}{bcolors.ENDC}
+
 {mainlogger.getlog()} 
 {refreshlogger.getlog()}
 \n\n
 {display_log.toprint}
 
-{bcolors.HEADER}CACHE LOGS:{bcolors.ENDC}
 
 """)
         

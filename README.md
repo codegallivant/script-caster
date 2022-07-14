@@ -1,4 +1,4 @@
-# mental-out
+# script-caster
 
 ## Readme outdated
 
@@ -112,7 +112,7 @@ Parameter values can be entered - `True` (ON) or `False` (OFF). Some parameters 
 COMPUTER_CODE = 0 # Recommended to be a small positive integer. 
 COMPUTER_NAME = "SYSTEM_" + str(COMPUTER_CODE) # Must match name of computer's respective sheet in Exterior.
 
-PROJECT_PATH = "C:/.../mental_out" # Path of project root folder
+PROJECT_PATH = "C:/.../script-caster" # Path of project root folder
 
 DEBUG_MODE = False # Choose whether you want to see logs
 ```
@@ -124,7 +124,7 @@ DEBUG_MODE = False # Choose whether you want to see logs
 <br>
 
 ### 5. Running the application
-**To run mental-out from the command line, execute the following code from the project root directory -**
+**To run script-caster from the command line, execute the following code from the project root directory -**
 ```
 python main.py
 ```
