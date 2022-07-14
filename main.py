@@ -9,29 +9,47 @@ os.chdir(USER_CONSTANTS.PROJECT_PATH)
 ctypes.windll.kernel32.SetConsoleTitleW("MENTAL-OUT")
 
 
-def end_program_from_systray(systray):
+
+show_console = USER_CONSTANTS.DISPLAY_CONSOLE  # Set default
+maintain_log = USER_CONSTANTS.SHOW_LOGS # Set default
+
+
+if USER_CONSTANTS.DISPLAY_CONSOLE == False:
+	win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
+
+
+def set_log_bool_fromSysTray(icon, item):
+    global maintain_log
+    maintain_log = not item.checked
+
+
+def set_console_display_fromSysTray(icon, item):
+    global show_console
+    show_console = not item.checked
+    if show_console:
+        win32gui.ShowWindow(the_program_to_hide , win32con.SW_SHOW)
+    if not show_console:
+        win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
+
+
+def end_program_fromSysTray(icon, item):
     os._exit(0)
 
-def hide_program(systray):
-    win32gui.ShowWindow(the_program_to_hide , win32con.SW_HIDE)
-# hide_program(None)
 
-def show_program(systray):
-    win32gui.ShowWindow(the_program_to_hide , win32con.SW_SHOW)
-
-#Adding app to system tray
-menu_options = (
-    ("Hide Console", None, hide_program),
-    ("Show Console", None, show_program),)
-
-systray = SysTrayIcon(f"favicon.ico", "MENTAL-OUT", menu_options, on_quit=end_program_from_systray)
-systray.start()
-
-#Ensuring systray gets appropriately dismantled when program ends
-def exit_handler():
-    systray.shutdown()
-
-atexit.register(exit_handler)
+im = PIL.Image.open("favicon.ico")
+icon = pystray.Icon("mental-out-icon",im,"MENTAL-OUT", menu=pystray.Menu(
+    pystray.MenuItem(
+        'Maintain log',
+        set_log_bool_fromSysTray,
+        checked=lambda item: maintain_log),
+    pystray.MenuItem(
+        'Show console',
+        set_console_display_fromSysTray,
+        checked=lambda item: show_console),
+    pystray.MenuItem(
+        'Quit',
+        end_program_fromSysTray
+        )))
 
 
 
@@ -115,6 +133,7 @@ def protect_connection(codetext):
         restartprogram()
 
 
+
 def countdown(t, message, logger=None):
     while t:
         mins, secs = divmod(t, 60)
@@ -127,14 +146,16 @@ def countdown(t, message, logger=None):
         t -= 1
 
 
+
 while True:
     try:
         print(f"\n{bcolors.OKBLUE}Authenticating with {bcolors.HEADER}Exterior{bcolors.ENDC}...{bcolors.ENDC}")
         client = exterior_connection.authenticate('creds/service_account_credentials.json')
-        print(f"{bcolors.OKGREEN}Authentication Successful!{bcolors.ENDC}")
+        print(f"{bcolors.OKGREEN}Done.{bcolors.ENDC}")
         break
     except:
         countdown(60, f"{bcolors.WARNING}Authentication Failed. Next Attempt to Authenticate:{bcolors.ENDC}")
+
 
 while True:        
     try:
@@ -145,6 +166,7 @@ while True:
         countdown(60, f"{bcolors.HEADER}Exterior/{USER_CONSTANTS.COMPUTER_NAME}{bcolors.ENDC}{bcolors.WARNING} could not be opened. Next Attempt:{bcolors.ENDC}")
 
 
+
 def update_local_user_scripts():
     user_scripts_list = user_scripts_compiler.update_scripts(USER_CONSTANTS.ACCESS_TOKEN, USER_CONSTANTS.USERNAME, USER_CONSTANTS.OPS_REPO_NAME, f"{USER_CONSTANTS.PROJECT_PATH}/local_user_scripts")
     return  user_scripts_list
@@ -153,6 +175,7 @@ while True:
     try: 
         print(f"\n{bcolors.OKBLUE}Fetching user-scripts from {bcolors.HEADER}GitHub/{USER_CONSTANTS.USERNAME}/{USER_CONSTANTS.OPS_REPO_NAME}{bcolors.ENDC}...{bcolors.ENDC}")
         user_scripts_list = update_local_user_scripts()
+        print(f"{bcolors.OKGREEN}Done.{bcolors.ENDC}")
         break
     except:
         countdown(60, f"{bcolors.WARNING}Failed to fetch user-scripts from {bcolors.HEADER}GitHub/{USER_CONSTANTS.USERNAME}/{USER_CONSTANTS.OPS_REPO_NAME}{bcolors.ENDC}.{bcolors.WARNING} Next Attempt:{bcolors.ENDC}")
@@ -166,13 +189,31 @@ for key in user_scripts_list:
 
 
 def refresh():
+    
     global refreshlogger
     print = refreshlogger.updatelog
+    
     global sheet
+    
     global user_scripts_list
+
+    global update_process_logs_thread
+    global display_log_thread
 
     while True:
         
+
+        if maintain_log is True:
+
+            if not update_process_logs_thread.is_alive():
+                update_process_logs_thread = threading.Thread(target = update_process_logs)
+                update_process_logs_thread.start()
+
+            if not display_log_thread.is_alive():
+                display_log_thread = threading.Thread(target = display_log)
+                display_log_thread.start()
+                
+
         protect_connection(f'Exterior.all_sheet_values, Exterior.records = exterior_connection.get_parameter_cell_values(sheet)')
 
         if Exterior.records["UPDATE_LOCAL_USER_SCRIPTS"] == "ON":
@@ -180,11 +221,11 @@ def refresh():
             print(f"{bcolors.OKBLUE}Updating {bcolors.HEADER}user-scripts{bcolors.ENDC}...", end='\r')
             
             try:
-            	user_scripts_list = update_local_user_scripts()
-            	protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                user_scripts_list = update_local_user_scripts()
+                protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
             except:
-            	print(f"{bcolors.HEADER}User-scripts {bcolors.OKGREEN}updated{bcolors.ENDC}.", end='\r')
-            	protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
+                print(f"{bcolors.HEADER}User-scripts {bcolors.OKGREEN}updated{bcolors.ENDC}.", end='\r')
+                protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', 'result', Exterior.all_sheet_values)")
             
             protect_connection(f"exterior_connection.update_parameter_cell_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'OFF', 'status', Exterior.all_sheet_values)")
 
@@ -232,8 +273,15 @@ def refresh():
 
 
 
-def update_loggers():
+def update_process_logs():
+
+    global maintain_log
+
     while True:
+
+        if maintain_log is False:
+            break
+
         for key in user_scripts_list:
             if key in list(Exterior.processes.keys()):
                 if Exterior.processes[key].poll() == None: #process is running
@@ -244,25 +292,33 @@ def update_loggers():
                         Exterior.process_loggers[key].updatelog(str(output))
 
 
-def displaylog():
+def display_log():
 
-    displaylog.thisloggerlog=None
-    displaylog.toprint=""""""
+    global maintain_log
 
     global refreshlogger
     global mainlogger
 
+
+    display_log.thisloggerlog=None
+    display_log.toprint=""""""
+
+
     while True:
 
-        displaylog.toprint=""""""
+        if maintain_log is False:
+            print(f"{bcolors.CLRSCRN}")
+            break
+
+        display_log.toprint=""""""
 
         for key in user_scripts_list:
             if len(Exterior.records)>0:    
                 if Exterior.records[key] == 'ON':
-                    displaylog.thisloggerlog = Exterior.process_loggers[key].getlog()
-                    displaylog.toprint+=(f"""
+                    display_log.thisloggerlog = Exterior.process_loggers[key].getlog()
+                    display_log.toprint+=(f"""
 {bcolors.OKBLUE}PARAMETER:{bcolors.ENDC} {bcolors.OKGREEN}{key}{bcolors.ENDC} 
-{displaylog.thisloggerlog}
+{display_log.thisloggerlog}
 \n
 """)
         time.sleep(1)
@@ -274,7 +330,7 @@ def displaylog():
 {mainlogger.getlog()} 
 {refreshlogger.getlog()}
 \n\n
-{displaylog.toprint}
+{display_log.toprint}
 
 {bcolors.HEADER}CACHE LOGS:{bcolors.ENDC}
 
@@ -282,16 +338,25 @@ def displaylog():
         
 
 
-refresh_process = threading.Thread(target = refresh)
+# show_systray_icon_thread = threading.Thread(target=show_systray_icon)
 
-update_loggers_process = threading.Thread(target = update_loggers)
+refresh_thread = threading.Thread(target = refresh)
 
-displaylog_process = threading.Thread(target = displaylog)
+update_process_logs_thread = threading.Thread(target = update_process_logs)
+
+display_log_thread = threading.Thread(target = display_log)
 
 
 
-if __name__ == '__main__':    
-    refresh_process.start()
-    update_loggers_process.start()
-    displaylog_process.start()
 
+# if __name__ == '__main__':    
+#     refresh_thread.start()
+
+def main(icon):
+    icon.visible = True
+    # if __name__ == '__main__':
+    print(f"{bcolors.CLRSCRN}")
+    refresh_thread.start()
+
+
+icon.run(main)
