@@ -1,7 +1,5 @@
 # script-caster
 
-## Readme incomplete
-
 <br><br>
 
 ###### BRIEF SUMMARY OF PROJECT:
@@ -12,7 +10,7 @@ This is a python application that enables a user to remotely execute user-script
 <br>
 
 ## Prerequisites:
-- Windows OS (Due to usage of `pywin32` and `win32gui` pip modules)
+- Windows OS 
 - Python 3+
 - Pip
 - Pip Modules:
@@ -55,22 +53,20 @@ Also see [Google APIs Terms of Service](https://developers.google.com/terms)
 
 <br>
 
-### 2. Setting up Exterior (Google Drive folder)
-This is a Google Drive folder. This component of the project is helps in using `ggl_api/gdprocesses.py`, which helps in uploading files to and downloading files from your Google Drive. To create it - 
-1. Login to your Google account and go to Google Drive
-2. Create a folder called `Exterior`
-
-<br>
-
-### 3. Setting up Exterior (Online Google spreadsheet)
+### 2. Setting up Exterior (Online Google spreadsheet)
 This is essentially a Google Sheets document i.e. a spreadsheet. It acts as a controller containing several parameters used to control the target computer remotely. 
 To set it up, create a Google Sheets document identical to this [copy of my version of Exterior](https://docs.google.com/spreadsheets/d/1wjEeu2_Jghxce32vzDpUoDYcjO-0N8ttbz5VEFvCqRI/edit?usp=sharing) inside the google drive folder named Exterior.
 
 <br>
 
-### 4. Setting up a GitHub repository 
-user-scripts can be stored in this repository. Only python files work.
-If the repository is private, make sure to set up an access token in Settings > Developer Settings > Personal Access Token
+### 3. Setting up a GitHub repository for your scripts
+- This repository is for storing the user-scripts which you can create and run remotely.
+- Currently only python scripts can be run
+- Steps for creating user-scripts:
+  1. Create a GitHub repository. Then, in `USER_CONSTANTS.py`, set `USERNAME` and `OPS_REPO_NAME` to your username and the repository's name respectively. If the repository is private, set `ACCESS_TOKEN` to your personal access token, else `None`.
+  2. Create the script inside this repository.
+  3. Create a switch for this script in Exterior.
+- [Sample user-scripts](https://github.com/codegallivant/sample-scriptcaster-userscripts/tree/4b91643be6b85eb4caddf76cbb21c8cb65d93822)
 
 <br>
 
@@ -89,7 +85,7 @@ SHOW_LOGS = True  # Recommended to be False if not viewing logs. Otherwise resou
 # GitHub Credentials
 USERNAME = "<username_of_repo_holder>"  
 OPS_REPO_NAME = "<repo_name>" 
-ACCESS_TOKEN = "<access_token" # Access token is required for accessing private repos. Go to Developer Settings in Settings of your GitHub account to create a GitHub Personal Access Token. If you are using a public git repo, you can set ACCESS_TOKEN to None
+ACCESS_TOKEN = "<access_token>" # Access token is required for accessing private repos. Go to Developer Settings in Settings of your GitHub account to create a GitHub Personal Access Token. If you are using a public git repo, you can set ACCESS_TOKEN to None
 
 ```
 0. Download the repository.
@@ -109,7 +105,6 @@ python main.py
 <br>
 <br>
 
-
 ## About Exterior (Google spreadsheet)
 The program fetches data from Exterior every few seconds. Based on parameter values, it then executes user-scripts that it scrapes from GitHub.
 
@@ -121,45 +116,46 @@ These parameters have been hard-coded into the main files of the program and are
   - The value of this parameter is related to other hard-coded parameters such as `LAST_CONTACT_TIME`, `CURRENT_TIME` and `TIME_DIFFERENCE`, which are also read-only.
 - `REQUEST_INTERVAL`
   - Input accepted
-  - Specifies interval(in integer seconds) between each fetch request to the spreadsheet
-  - **IMPORTANT:** Specifying a very low interval and continuously communicating with the program via Google API can be dangerous. See Google API [usage limits](https://developers.google.com/sheets/api/limits).
+  - Specify the interval(in integer seconds) between each fetch request to the spreadsheet
+  - **IMPORTANT:** Specifying a very low interval and continuously communicating with the program via Google API can be dangerous. See Google API [usage limits](https://developers.google.com/sheets/api/limits). Minimum interval time recommended is 5 seconds.
 - `UPDATE_LOCAL_USER_SCRIPTS`
   - Input accepted
   - Checkmark this parameter if you've just changed user-scripts in your repo and want the changes to be downloaded locally. They will only be considered by the program after you've marked this parameter.
   
-### Other parameters
-Yet to be written in readme
+### User-Script parameters
+- These parameters are used to manage the functioning of user-scripts. 
+- To create a switch parameter, set the value of a cell to the user-script's name. In the cell below this one, you can set it to `ON` or `OFF`. Use of conditional formatting and data validation is recommended.
+- To see the status for the execution of the user-script, in the same row as the switch parameter, do as follows - Set the value of a cell to `STATUS`. In the cell below this one, the program will automatically set the value as one of the following depending on the script's result - `Running`, `Done`, `Failed`, along with the timestamp.
+- In your scripts, you can also make contact with Exterior and fetch/update values. To know more, see [gspread documentation](https://docs.gspread.org/en/latest/)
 
+### Comments
+To add a comment that will not be parsed by the program, set the value of a cell to `COMMENT`. In the cell below this one, you can set the comment. 
+
+<br>
+
+**See examples of user-script parameters and comments [here](https://docs.google.com/spreadsheets/d/1wjEeu2_Jghxce32vzDpUoDYcjO-0N8ttbz5VEFvCqRI/edit?usp=sharing)**
+<br>
+**NOTE:** When creating parameters, ensure headings of one parameter do not lie in the same row as values of another parameter. If you do this, the program may extract values incorrectly or throw an error.
+
+<br>
+<br>
 
 ## Other important files:
 
 These files may be useful while creating user-scripts. 
 
-- `ggl_api/exterior_connection.py`
-- `ggl_api/gdprocesses.py`
+#### 1. `ggl_api/exterior_connection.py`
+`ggl_api/connection.py` holds functions that help establishing connection with the Exterior spreadsheet as well as updating its values easily. The functions are made such that the number of API requests sent is lesser than otherwise.
 
-<br>
-
-### 5. `ggl_api/exterior_connection.py`
-`ggl_api/connection.py` holds functions that help establishing connection with the Exterior spreadsheet as well as updating its values easily.
-
-<br>
-
-### 6. `ggl_api/gdprocesses.py`
+#### 2. `ggl_api/gdprocesses.py`
 `ggl_api/gdprocesses.py` holds functions that help easily upload/download files or folders to/from Google Drive.
 
 <br>
 <br>
 
-## Creating user-scripts
-Yet to be added in readme
-
-<br>
-<br>
-
-## Sidenotes
+## Note
  
-- This application has been built and tested on Windows 10 only. It cannot run on any other OS currently, due to the use of the modules `pywin32` and `win32gui` to hide the console. 
+- This program cannot run on any other OS currently, due to the use of the modules `pywin32` and `win32gui` to hide the console. 
 - user-scripts can only be executed on a target computer only if the application has been installed into the target computer.
 - Program can only run on the target while the target computer while the target is awake.
 - Program will only be able to fetch data and execute accordingly if it has access to the Internet.
