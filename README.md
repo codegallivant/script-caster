@@ -103,7 +103,7 @@ python main.py
 ## Creating user-scripts
 - Currently only python scripts can be run
 - Steps for creating user-scripts:
-  1. Create a GitHub repository. Then, in `USER_CONSTANTS.py`, set  `OPS_REPO_NAME` to the repository's name.
+  1. Create a GitHub repository. Then, in `USER_CONSTANTS.py`, set `USERNAME` and `OPS_REPO_NAME` to your username and the repository's name respectively. If the repository is private, set `ACCESS_TOKEN` to your personal access token, else `None`.
   2. Create the script inside this repository.
   3. Create a switch for this script in Exterior.
 - [Sample user-scripts](https://github.com/codegallivant/sample-scriptcaster-userscripts/tree/4b91643be6b85eb4caddf76cbb21c8cb65d93822)
