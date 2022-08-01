@@ -60,7 +60,7 @@ To set it up, create a Google Sheets document identical to this [copy of my vers
 <br>
 
 ### 3. Setting up a GitHub repository 
-Scripts can be stored in this repository. Only python files work.
+Scripts can be stored in this repository. Only python files work. <br>
 If the repository is private, make sure to set up an access token in Settings > Developer Settings > Personal Access Token
 
 <br>
@@ -80,7 +80,7 @@ SHOW_LOGS = True  # Recommended to be False if not viewing logs. Otherwise resou
 # GitHub Credentials
 USERNAME = "<username_of_repo_holder>"  
 OPS_REPO_NAME = "<repo_name>" 
-ACCESS_TOKEN = "<access_token" # Access token is required for accessing private repos. Go to Developer Settings in Settings of your GitHub account to create a GitHub Personal Access Token. If you are using a public git repo, you can set ACCESS_TOKEN to None
+ACCESS_TOKEN = "<access_token>" # Access token is required for accessing private repos. Go to Developer Settings in Settings of your GitHub account to create a GitHub Personal Access Token. If you are using a public git repo, you can set ACCESS_TOKEN to None
 
 ```
 0. Download the repository.
