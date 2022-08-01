@@ -106,6 +106,7 @@ python main.py
   1. Create a GitHub repository. Then, in `USER_CONSTANTS.py`, set  `OPS_REPO_NAME` to the repository's name.
   2. Create the script inside this repository.
   3. Create a switch for this script in Exterior.
+- [Sample user-scripts](https://github.com/codegallivant/sample-scriptcaster-userscripts/tree/4b91643be6b85eb4caddf76cbb21c8cb65d93822)
 
 <br>
 <br>
@@ -128,7 +129,6 @@ These parameters have been hard-coded into the main files of the program and are
   - Checkmark this parameter if you've just changed user-scripts in your repo and want the changes to be downloaded locally. They will only be considered by the program after you've marked this parameter.
   
 ### User-Script parameters
-- [Sample user-scripts](https://github.com/codegallivant/sample-scriptcaster-userscripts/tree/4b91643be6b85eb4caddf76cbb21c8cb65d93822)
 - These parameters are used to manage the functioning of user-scripts. 
 - To create a switch parameter, set the value of a cell to the user-script's name. In the cell below this one, you can set it to `ON` or `OFF`. Look at the spreadsheet for examples. Use of conditional formatting and data validation is recommended.
 - To see the status for the execution of the user-script, in the same row as the switch parameter, do as follows - Set the value of a cell to `STATUS`. In the cell below this one, the program will automatically set the value as one of the following depending on the script's result - `Running`, `Done`, `Failed`, along with the timestamp.
