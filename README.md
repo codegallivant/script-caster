@@ -1,5 +1,7 @@
 # script-caster
 
+## Readme outdated
+
 <br><br>
 
 ###### BRIEF SUMMARY OF PROJECT:
