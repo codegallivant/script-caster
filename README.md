@@ -69,8 +69,6 @@ To set it up, create a Google Sheets document identical to this [copy of my vers
 - [Sample user-scripts](https://github.com/codegallivant/sample-scriptcaster-userscripts/tree/4b91643be6b85eb4caddf76cbb21c8cb65d93822)
 
 <br>
-<br>
-<br>
 
 ### 4. Setting up `USER_CONSTANTS.py`
 ```python
@@ -126,15 +124,17 @@ These parameters have been hard-coded into the main files of the program and are
   
 ### User-Script parameters
 - These parameters are used to manage the functioning of user-scripts. 
-- To create a switch parameter, set the value of a cell to the user-script's name. In the cell below this one, you can set it to `ON` or `OFF`. Look at the spreadsheet for examples. Use of conditional formatting and data validation is recommended.
+- To create a switch parameter, set the value of a cell to the user-script's name. In the cell below this one, you can set it to `ON` or `OFF`. Use of conditional formatting and data validation is recommended.
 - To see the status for the execution of the user-script, in the same row as the switch parameter, do as follows - Set the value of a cell to `STATUS`. In the cell below this one, the program will automatically set the value as one of the following depending on the script's result - `Running`, `Done`, `Failed`, along with the timestamp.
 - In your scripts, you can also make contact with Exterior and fetch/update values. To know more, see [gspread documentation](https://docs.gspread.org/en/latest/)
 
 ### Comments
-To add a comment that will not be parsed by the program, set the value of a cell to `COMMENT`. In the cell below this one, you can set the comment. Look at the spreadsheet for examples. 
+To add a comment that will not be parsed by the program, set the value of a cell to `COMMENT`. In the cell below this one, you can set the comment. 
 
 <br>
 
+**See examples of user-script parameters and comments [here](https://docs.google.com/spreadsheets/d/1wjEeu2_Jghxce32vzDpUoDYcjO-0N8ttbz5VEFvCqRI/edit?usp=sharing)**
+<br>
 **NOTE:** When creating parameters, ensure headings of one parameter do not lie in the same row as values of another parameter. If you do this, the program may extract values incorrectly or throw an error.
 
 <br>
