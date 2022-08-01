@@ -36,8 +36,11 @@ def update_scripts(access_token, username, ops_repo_name, path):
     
     while len(contents) > 0:
         file_content = contents.pop(0)
-        user_scripts_list.append(os.path.splitext(file_content.name)[0])
-        ops_file = open(f"{path}/user_script_files/{os.path.splitext(file_content.name)[0]}.py",'w')
+        if os.path.splitext(file_content.name)[1].upper() == ".GITIGNORE":
+            continue
+        split_filename = os.path.splitext(file_content.name)
+        user_scripts_list.append(file_content.name)
+        ops_file = open(f"{path}/user_script_files/{file_content.name}",'w')
         ops_file.write(file_content.decoded_content.decode('utf-8'))
         ops_file.close()
     

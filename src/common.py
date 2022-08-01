@@ -6,9 +6,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 import time
 import pyautogui as pag
 import threading
-import win32
-import win32gui
-import win32.lib.win32con as win32con
 import pyautogui as pag   
 import ctypes
 import datetime
@@ -16,6 +13,10 @@ import keyboard
 import subprocess
 import PIL
 import pystray
+import tkinter as tk
+import tkinter.font
+# import sv_ttk
+import socket
 
 # from pydrive.drive import GoogleDrive 
 # from pydrive.auth import GoogleAuth
