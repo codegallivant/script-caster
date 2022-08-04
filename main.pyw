@@ -279,8 +279,8 @@ insert_listitems_func.finished = True
 def update_local_user_scripts():
     user_scripts_names = user_scripts_compiler.update_scripts(USER_CONSTANTS.ACCESS_TOKEN, USER_CONSTANTS.USERNAME, USER_CONSTANTS.OPS_REPO_NAME, f"{USER_CONSTANTS.PROJECT_PATH}/local_user_scripts")
     threading.Thread(target = insert_listitems_func, args = [user_scripts_names]).start()
-    while insert_listitems_func.finished is False:
-        time.sleep(1)
+    # while insert_listitems_func.finished is False:
+    #     time.sleep(1)
     user_scripts_statuses = dict()
     for user_script_name in user_scripts_names:
         user_scripts_statuses[user_script_name] = 'None'
@@ -347,9 +347,10 @@ def main():
             
             try:
                 UserScripts.statuses = update_local_user_scripts()
+                mainlogger2.updatelog(f"User-scripts updated.", end='\r')
                 protect_connection(f"exterior_connection.update_parameter_status(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
             except:
-                mainlogger2.updatelog(f"User-scripts updated.", end='\r')
+                mainlogger2.updatelog("Could not update user-scripts.", end='\r')
                 protect_connection(f"exterior_connection.update_parameter_status(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'Failed ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
             
             protect_connection(f"exterior_connection.update_parameter_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'OFF', Exterior.all_sheet_values)")
@@ -360,7 +361,7 @@ def main():
                 
                 if Exterior.records[key] == 'ON':
                     
-                    if key in UserScripts.ActiveSubprocesses.processes:  #Element exists 
+                    if key in UserScripts.ActiveSubprocesses.processes.keys():  #Element exists 
                         
                         if UserScripts.ActiveSubprocesses.processes[key].poll() != None: #Thread is not running
                           
@@ -390,7 +391,7 @@ def main():
                         UserScripts.statuses[key]="Running"
                 elif Exterior.records[key]=='OFF':
             
-                    if key in UserScripts.ActiveSubprocesses.processes:
+                    if key in UserScripts.ActiveSubprocesses.processes.keys():
                         if UserScripts.ActiveSubprocesses.processes[key].poll() == None: #Thread is running
                             protect_connection(f"exterior_connection.update_parameter_status(sheet, '{key}', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
                             UserScripts.statuses[key]="Done"
@@ -470,8 +471,9 @@ def show_selected_log():
         ops_log.xview_moveto(xscrollbar_posn[0])
 
     # Settings colours to scripts based on status
-    for key in UserScripts.statuses.keys():
-        ops_treeview.item(key, tags = UserScripts.statuses[key])
+    if insert_listitems_func.finished == True:
+        for key in UserScripts.statuses.keys():
+            ops_treeview.item(key, tags = UserScripts.statuses[key])
 
     root.after(200, show_selected_log)
 

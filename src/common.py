@@ -4,12 +4,10 @@ import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import time
-import pyautogui as pag
-import threading
-import pyautogui as pag   
+import pyautogui #Required for tkinter.ttk
+import threading   
 import ctypes
 import datetime
-import keyboard
 import subprocess
 import PIL
 import pystray
