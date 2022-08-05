@@ -1,6 +1,6 @@
 # script-caster
 
-## Readme outdated
+## Readme incomplete
 
 <br><br>
 
@@ -12,25 +12,8 @@ This is a python application that enables a user to remotely execute user-script
 <br>
 
 ## Prerequisites:
-- Windows OS 
 - Python 3+
-- Pip
-- Pip Modules:
-  - sys
-  - os
-  - pystray
-  - gspread
-  - oauth2client
-  - pydrive
-  - threading
-  - win32
-  - win32gui
-  - ctypes
-  - copy
-  - datetime
-  - keyboard
-  - pyautogui
-  - pillow
+- pip modules (See `requirements.txt` for list of modules)
 - Google Account
 - Google API Console Service Account
 - `creds/service_account_credentials.json` file (Credentials for Google Service Account)
@@ -51,7 +34,7 @@ This is a python application that enables a user to remotely execute user-script
 4. Download the credentials as `service_account_credentials.json` file
 5. Store the `service_account_credentials.json` file in the `creds/` folder. 
 6. Done.
-Also see [Google APIs Terms of Service](https://developers.google.com/terms)
+Also see [Google APIs Terms of Service](https://developers.google.com/terms).
 
 <br>
 
@@ -65,44 +48,27 @@ To set it up, create a Google Sheets document identical to this [copy of my vers
 - This repository is for storing the user-scripts which you can create and run remotely.
 - Currently only python scripts can be run
 - Steps for creating user-scripts:
-  1. Create a GitHub repository. Then, in `USER_CONSTANTS.py`, set `USERNAME` and `OPS_REPO_NAME` to your username and the repository's name respectively. If the repository is private, set `ACCESS_TOKEN` to your personal access token, else `None`.
+  1. Create a GitHub repository. 
   2. Create the script inside this repository.
   3. Create a switch for this script in Exterior.
-- [Sample user-scripts](https://github.com/codegallivant/sample-scriptcaster-userscripts/tree/4b91643be6b85eb4caddf76cbb21c8cb65d93822)
+- [Sample user-scripts](https://github.com/codegallivant/sample-scriptcaster-userscripts/)
 
 <br>
 
-### 4. Setting up `USER_CONSTANTS.py`
-```python
-COMPUTER_CODE = 0 # Recommended to be a small positive integer. 
-COMPUTER_NAME = "SYSTEM_" + str(COMPUTER_CODE) # Must match name of computer's respective sheet in Exterior.
-
-# Path of project folder
-PROJECT_PATH = "C:/.../script-caster"
-
-# Set defaults for displaying console/logs on program startup. Can also be changed after program starts by interacting with system tray icon.
-DISPLAY_CONSOLE = True
-SHOW_LOGS = True  # Recommended to be False if not viewing logs. Otherwise resources are used unnecessarily.
-
-# GitHub Credentials
-USERNAME = "<username_of_repo_holder>"  
-OPS_REPO_NAME = "<repo_name>" 
-ACCESS_TOKEN = "<access_token>" # Access token is required for accessing private repos. Go to Developer Settings in Settings of your GitHub account to create a GitHub Personal Access Token. If you are using a public git repo, you can set ACCESS_TOKEN to None
-
+### 4. Installing pip modules
+Download the repository. From the command line, run this in the app's root directory - 
 ```
-0. Download the repository.
-1. Create a file called `USER_CONSTANTS.py` in the root folder.
-2. Set values of `PROJECT_PATH`, `DISPLAY_CONSOLE`, `SHOW_LOGS`, `USERNAME`, `OPS_REPO_NAME` and `ACCESS_TOKEN`. If you are using a public repo, you may set `ACCESS_TOKEN` to `None`.
-3. You may be using multiple computers with your Exterior spreadsheet. In order to differentiate them, assign each a different `COMPUTER_CODE` and create different sheets for each of them in the Exterior spreadsheet. When you set the name of their sheet in Exterior, ensure it matches with the respective  `COMPUTER_NAME`. In the example above, the sheet's name should be `SYSTEM_0`. 
+pip install -r requirements.txt
+```
 
 <br>
 
 ### 5. Running the application
-**To run script-caster from the command line, execute the following code from the project root directory -**
+**To run script-caster from the command line, execute the following code from the app root directory -**
 ```
-python main.py
+pythonw main.pyw
 ```
-**Sidenote:** After the program starts, it creates an icon in the system tray. Upon right-clicking the system tray icon several options become visible.
+Alternatively, you can just click on the file and open it with Python.
 
 <br>
 <br>
@@ -157,7 +123,7 @@ These files may be useful while creating user-scripts.
 
 ## Note
  
-- This program cannot run on any other OS currently, due to the use of the modules `pywin32` and `win32gui` to hide the console. 
+- This program is supposed to be able to run on all operating systems, though it has only been tested on Windows.
 - user-scripts can only be executed on a target computer only if the application has been installed into the target computer.
 - Program can only run on the target while the target computer while the target is awake.
 - Program will only be able to fetch data and execute accordingly if it has access to the Internet.

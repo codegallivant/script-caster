@@ -13,8 +13,10 @@ import PIL
 import pystray
 import tkinter as tk
 import tkinter.font
+import tkinter.filedialog
 # import sv_ttk
 import socket
+import atexit
 
 # from pydrive.drive import GoogleDrive 
 # from pydrive.auth import GoogleAuth

@@ -3,7 +3,7 @@ import shutil
 from github import Github 
 
 
-def update_scripts(access_token, username, ops_repo_name, path):
+def update_scripts(access_token, username, repo_name, path):
 
 
     # Erasing contents of folder
@@ -24,12 +24,12 @@ def update_scripts(access_token, username, ops_repo_name, path):
 
     # Writing file contents from GitHub
 
-    if access_token == None:
+    if access_token == None or access_token == "":
         g = Github()
     else:
         g = Github(access_token)
 
-    repo = g.get_repo(f"{username}/{ops_repo_name}")
+    repo = g.get_repo(f"{username}/{repo_name}")
     contents = repo.get_contents("")
     
     user_scripts_list = []

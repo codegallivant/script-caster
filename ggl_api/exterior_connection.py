@@ -63,39 +63,15 @@ def update_parameter_status(sheet, parameter_name, new_cell_value, sheet_values=
 	sheet.update_cell(cell[0]+1, cell[1], new_cell_value)
 
 
-# def update_parameter_cell_value(sheet, parameter_name, new_cell_value, value_type="status", sheet_values=None):
-# 	if sheet_values == None:
-# 		sheet_values = sheet.get_all_values()
-# 	# print(sheet_values)
-# 	parameter_found = False
-# 	status_found = False
-# 	for row in sheet_values:
-# 		for cell in row:
-# 			if cell==parameter_name:
-# 				value_row = sheet_values.index(row)+1
-# 				value_col = row.index(cell)+1
-# 				parameter_found = True
-# 			if cell=="STATUS":
-# 				subparameter_row = sheet_values.index(row)+1
-# 				subparameter_col = row.index(cell)+1
-# 				status_found = True
-# 		if parameter_found == True and status_found == True:
-# 			if subparameter_row == value_row:
-# 				break	
-# 	# print(subparameter_row)
-# 	# print(value_row)
-# 	if value_type == "status":
-# 		sheet.update_cell(value_row+1, value_col, new_cell_value)
-# 		# sheet.update_cell(sheet.find(parameter_name).row+1,sheet.find(parameter_name).col, new_cell_value)
-# 	elif value_type == "result":
-# 		sheet.update_cell(subparameter_row+1, subparameter_col, new_cell_value)
-# 		# sheet.update_cell(sheet.find(parameter_name).row+1,sheet.find(parameter_name).col, new_cell_value)
-
-
-def get_parameter_values(sheet):
+def get_parameter_values(sheet=None, sheet_values=None):
 	# Returns a dict where parameter: value below it
 	result_dict = dict()
-	values = sheet.get_all_values() #Returns list of lists where [[r1c1,r1c2,r1c3...],[r2c1,r2c2,r2c3...],...]
+	if sheet == None and sheet_values == None:
+		return
+	if sheet == None:
+		values = deepcopy(sheet_values)
+	if sheet_values == None:
+		values = sheet.get_all_values() #Returns list of lists where [[r1c1,r1c2,r1c3...],[r2c1,r2c2,r2c3...],...]
 	# print(values)
 	values_copy = deepcopy(values)
 	# print(values)
@@ -114,11 +90,6 @@ def get_parameter_values(sheet):
 				values[values.index(row)+1][row.index(cell)]=''
 				values[values.index(row)][row.index(cell)]=''
 
-		
-		# for cell in row:
-		# 	if cell == '':
-		# 		values[values.index(row)+1].pop(row.index(cell))
-		# 		values[values.index(row)].pop(row.index(cell))
 
 		for cell in values[values.index(row)]:
 			# print(row)
