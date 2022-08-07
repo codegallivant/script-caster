@@ -128,3 +128,4 @@ These files may be useful while creating user-scripts.
 - Program can only run on the target while the target computer while the target is awake.
 - Program will only be able to fetch data and execute accordingly if it has access to the Internet.
 - This is not meant as a hacking tool, nor does it suit one.
+- [Icon(`favicon.ico`) credits: www.flaticon.com](https://www.flaticon.com/premium-icon/cloud-service_3211343?term=cloud&page=1&position=1&page=1&position=1&related_id=3211343&origin=search)

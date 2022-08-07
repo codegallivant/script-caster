@@ -21,7 +21,7 @@ def open_sheet(file_name, sheet_name, client):
 	return sheet
 
 
-def find_parameter_cells(sheet, parameter_name, subparameter_name=None, sheet_values=None):
+def find_parameter_cells(sheet, parameter_name, subparameter_name=None, sheet_values=None): # Returns subparameter header cell location, given parameter and subparameter name.
 	
 	if sheet_values == None:
 		sheet_values = sheet.get_all_values()
@@ -54,24 +54,29 @@ def find_parameter_cells(sheet, parameter_name, subparameter_name=None, sheet_va
 	return [subparameter_row,subparameter_col]
 
 
+
 def update_parameter_value(sheet, parameter_name, new_cell_value, sheet_values=None):
 	cell = find_parameter_cells(sheet, parameter_name, None, sheet_values)
 	sheet.update_cell(cell[0]+1, cell[1], new_cell_value)
+
 
 def update_parameter_status(sheet, parameter_name, new_cell_value, sheet_values=None):
 	cell = find_parameter_cells(sheet, parameter_name, "STATUS", sheet_values)
 	sheet.update_cell(cell[0]+1, cell[1], new_cell_value)
 
 
-def get_parameter_values(sheet=None, sheet_values=None):
-	# Returns a dict where parameter: value below it
+
+def get_parameter_values(sheet=None, sheet_values=None):  # Returns a dict where parameter: value below it
+	
 	result_dict = dict()
-	if sheet == None and sheet_values == None:
-		return
-	if sheet == None:
+
+	if sheet_values != None:
 		values = deepcopy(sheet_values)
-	if sheet_values == None:
+	elif sheet != None:
 		values = sheet.get_all_values() #Returns list of lists where [[r1c1,r1c2,r1c3...],[r2c1,r2c2,r2c3...],...]
+	else:
+		return
+
 	# print(values)
 	values_copy = deepcopy(values)
 	# print(values)
@@ -105,6 +110,15 @@ def get_parameter_values(sheet=None, sheet_values=None):
 			skip_next_row = True
 
 	return [values_copy, result_dict]
+
+
+
+def get_parameter_status(parameter_name, sheet=None, sheet_values=None):
+	cell = find_parameter_cells(sheet, parameter_name, "STATUS", sheet_values)
+	values, parameter_dict = get_parameter_values(sheet, sheet_values)
+	return values[cell[0]][cell[1]-1]
+
+
 
 
 # code for testing - 

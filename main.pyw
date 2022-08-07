@@ -1,11 +1,18 @@
 from src.common import *
 
 
-if not USER_CONSTANTS.is_created():
-    USER_CONSTANTS.create()
+if not USER_VARIABLES.is_created():
+    USER_VARIABLES.create()
 
 
-os.chdir(USER_CONSTANTS.get("PROJECT_PATH"))
+CONSTANT_USER_VARIABLES = USER_VARIABLES.get_dict()
+
+# Changing these does not necessitate restart & vars are not needed in user-scripts hence not including in dict -
+del CONSTANT_USER_VARIABLES["SHOW_WINDOW"] 
+del CONSTANT_USER_VARIABLES["MAX_LOG_LENGTH"]
+
+
+os.chdir(CONSTANT_USER_VARIABLES["APP_FOLDER_PATH"])
 
 
 ctypes.windll.kernel32.SetConsoleTitleW("ScriptCaster")
@@ -98,13 +105,16 @@ def set_defaults():
     input_frames = dict()
     input_labels =  dict()
     input_boxes = dict()
-    user_constants_dict = USER_CONSTANTS.get_dict()
+    user_variables_dict = USER_VARIABLES.get_dict()
 
     input_frames["COMPUTER_NAME"] = tk.ttk.LabelFrame(set_defaults_window_contents_frame)
     input_frames["COMPUTER_NAME"].pack(fill="x",padx = 25, pady = 5, ipady=5, ipadx=5)
 
-    input_frames["PROJECT_PATH"] = tk.ttk.LabelFrame(set_defaults_window_contents_frame)
-    input_frames["PROJECT_PATH"].pack(fill="x",padx = 25, pady = 5, ipady=5, ipadx=5)
+    input_frames["APP_FOLDER_PATH"] = tk.ttk.LabelFrame(set_defaults_window_contents_frame)
+    input_frames["APP_FOLDER_PATH"].pack(fill="x",padx = 25, pady = 5, ipady=5, ipadx=5)
+
+    input_frames["USERSCRIPTS_FOLDER_PATH"] = tk.ttk.LabelFrame(set_defaults_window_contents_frame)
+    input_frames["USERSCRIPTS_FOLDER_PATH"].pack(fill="x",padx = 25, pady = 5, ipady=5, ipadx=5)
     
     input_frames["SHOW_WINDOW"] = tk.ttk.LabelFrame(set_defaults_window_contents_frame)
     input_frames["SHOW_WINDOW"].pack(fill="x",padx = 25, pady = 5, ipady=5, ipadx=5)
@@ -128,23 +138,37 @@ def set_defaults():
     input_labels["COMPUTER_NAME"] = tk.ttk.Label(input_frames["COMPUTER_NAME"], text = "Enter the name of the sheet in Exterior that this computer must access.")
     input_labels["COMPUTER_NAME"].pack(anchor="w")
     input_boxes["COMPUTER_NAME"] = tk.ttk.Entry(input_frames["COMPUTER_NAME"], width=20)
-    input_boxes["COMPUTER_NAME"].insert("end", user_constants_dict["COMPUTER_NAME"])
+    input_boxes["COMPUTER_NAME"].insert("end", user_variables_dict["COMPUTER_NAME"])
     input_boxes["COMPUTER_NAME"].pack(anchor="w", padx=10, pady=5)
-    
-    input_labels["PROJECT_PATH"] = tk.Label(input_frames["PROJECT_PATH"], text = "Enter the path of the app directory.")
-    input_labels["PROJECT_PATH"].pack(anchor="w")
-    input_boxes["PROJECT_PATH"] = tk.ttk.Entry(input_frames["PROJECT_PATH"], width=40)
-    input_boxes["PROJECT_PATH"].insert("end", user_constants_dict["PROJECT_PATH"])
-    input_boxes["PROJECT_PATH"].pack(anchor="w", side="left",padx=10, pady=5)
 
-    def browsefunc():
+
+    def browsefunc(input_box_key):
         foldername =tk.filedialog.askdirectory()
-        input_boxes["PROJECT_PATH"].insert("end", foldername) # add this
+        input_boxes[input_box_key].insert("end", foldername) # add this
 
-    input_project_path_browse_button = tk.ttk.Button(input_frames["PROJECT_PATH"],text="Browse",command=browsefunc)
-    input_project_path_browse_button.pack(side="left")
 
-    default_show_window_intvar = tk.IntVar(value=int(not USER_CONSTANTS.get("SHOW_WINDOW")))
+    
+    input_labels["APP_FOLDER_PATH"] = tk.Label(input_frames["APP_FOLDER_PATH"], text = "Enter the path of the app directory.")
+    input_labels["APP_FOLDER_PATH"].pack(anchor="w")
+    input_boxes["APP_FOLDER_PATH"] = tk.ttk.Entry(input_frames["APP_FOLDER_PATH"], width=40)
+    input_boxes["APP_FOLDER_PATH"].insert("end", user_variables_dict["APP_FOLDER_PATH"])
+    input_boxes["APP_FOLDER_PATH"].pack(anchor="w", side="left",padx=10, pady=5)
+
+    input_app_folder_path_browse_button = tk.ttk.Button(input_frames["APP_FOLDER_PATH"],text="Browse",command= lambda: browsefunc("APP_FOLDER_PATH"))
+    input_app_folder_path_browse_button.pack(side="left")
+
+
+    input_labels["USERSCRIPTS_FOLDER_PATH"] = tk.Label(input_frames["USERSCRIPTS_FOLDER_PATH"], text = "Enter the path of the directory for storing user-scripts downloaded from GitHub.")
+    input_labels["USERSCRIPTS_FOLDER_PATH"].pack(anchor="w")
+    input_boxes["USERSCRIPTS_FOLDER_PATH"] = tk.ttk.Entry(input_frames["USERSCRIPTS_FOLDER_PATH"], width=40)
+    input_boxes["USERSCRIPTS_FOLDER_PATH"].insert("end", user_variables_dict["USERSCRIPTS_FOLDER_PATH"])
+    input_boxes["USERSCRIPTS_FOLDER_PATH"].pack(anchor="w", side="left",padx=10, pady=5)
+
+    input_userscripts_folder_path_browse_button = tk.ttk.Button(input_frames["USERSCRIPTS_FOLDER_PATH"],text="Browse",command= lambda: browsefunc("USERSCRIPTS_FOLDER_PATH"))
+    input_userscripts_folder_path_browse_button.pack(side="left")
+
+
+    default_show_window_intvar = tk.IntVar(value=int(not USER_VARIABLES.get("SHOW_WINDOW")))
     input_labels["SHOW_WINDOW"] = tk.Label(input_frames["SHOW_WINDOW"], text = "Minimize window to notification area (system tray) on app startup")
     input_boxes["SHOW_WINDOW"] = tk.ttk.Checkbutton(input_frames["SHOW_WINDOW"], variable  = default_show_window_intvar)
     input_boxes["SHOW_WINDOW"].pack(anchor="w", side="left",padx=10, pady=5)
@@ -153,43 +177,42 @@ def set_defaults():
     input_labels["MAX_LOG_LENGTH"] = tk.Label(input_frames["MAX_LOG_LENGTH"], text = "Set the maximum length of log lists. Upon exceeding this length, old logs will be deleted.")
     input_labels["MAX_LOG_LENGTH"].pack(anchor="w")
     input_boxes["MAX_LOG_LENGTH"] = tk.ttk.Entry(input_frames["MAX_LOG_LENGTH"], width=10)
-    input_boxes["MAX_LOG_LENGTH"].insert("end", user_constants_dict["MAX_LOG_LENGTH"])
+    input_boxes["MAX_LOG_LENGTH"].insert("end", user_variables_dict["MAX_LOG_LENGTH"])
     input_boxes["MAX_LOG_LENGTH"].pack(anchor="w", padx=10, pady=5)
 
     input_labels["GITHUB_USERNAME"] = tk.Label(input_frames["GITHUB_USERNAME"], text = "Enter the username of the GitHub account containing your scripts.")
     input_labels["GITHUB_USERNAME"].pack(anchor="w")
     input_boxes["GITHUB_USERNAME"] = tk.ttk.Entry(input_frames["GITHUB_USERNAME"], width=25)
-    input_boxes["GITHUB_USERNAME"].insert("end", user_constants_dict["GITHUB_USERNAME"])
+    input_boxes["GITHUB_USERNAME"].insert("end", user_variables_dict["GITHUB_USERNAME"])
     input_boxes["GITHUB_USERNAME"].pack(anchor="w", padx=10, pady=5)
 
     input_labels["GITHUB_REPO_NAME"] = tk.Label(input_frames["GITHUB_REPO_NAME"], text = "Enter the name of the GitHub repository containing your scripts.")
     input_labels["GITHUB_REPO_NAME"].pack(anchor="w")
     input_boxes["GITHUB_REPO_NAME"] = tk.ttk.Entry(input_frames["GITHUB_REPO_NAME"], width=25)
-    input_boxes["GITHUB_REPO_NAME"].insert("end", user_constants_dict["GITHUB_REPO_NAME"])
+    input_boxes["GITHUB_REPO_NAME"].insert("end", user_variables_dict["GITHUB_REPO_NAME"])
     input_boxes["GITHUB_REPO_NAME"].pack(anchor="w", padx=10, pady=5)
 
     input_labels["GITHUB_ACCESS_TOKEN"] = tk.Label(input_frames["GITHUB_ACCESS_TOKEN"], text = "Enter your GitHub personal access token. If you are using a public repository, you may leave this field blank.")
     input_labels["GITHUB_ACCESS_TOKEN"].pack(anchor="w")
     input_boxes["GITHUB_ACCESS_TOKEN"] = tk.ttk.Entry(input_frames["GITHUB_ACCESS_TOKEN"], width=40, show="*")
-    input_boxes["GITHUB_ACCESS_TOKEN"].insert("end", user_constants_dict["GITHUB_ACCESS_TOKEN"])
+    input_boxes["GITHUB_ACCESS_TOKEN"].insert("end", user_variables_dict["GITHUB_ACCESS_TOKEN"])
     input_boxes["GITHUB_ACCESS_TOKEN"].pack(anchor="w", padx=10, pady=5)
 
 
     def set_new_defaults():
-        restart_required_list = ["PROJECT_PATH","COMPUTER_NAME","GITHUB_USERNAME", "GITHUB_REPO_NAME", "GITHUB_ACCESS_TOKEN"]
         restart_required = False
-        for constant_name in user_constants_dict.keys():
-            old_value = user_constants_dict[constant_name]
-            if constant_name == "SHOW_WINDOW":
+        for user_variable_name in user_variables_dict.keys():
+            old_value = user_variables_dict[user_variable_name]
+            if user_variable_name == "SHOW_WINDOW":
                 value = not bool(default_show_window_intvar.get())
-            elif constant_name == "MAX_LOG_LENGTH":
-                value = int(input_boxes[constant_name].get())
+            elif user_variable_name == "MAX_LOG_LENGTH":
+                value = int(input_boxes[user_variable_name].get())
             else:
-                value = input_boxes[constant_name].get()
-            if value != old_value and constant_name in restart_required_list:
+                value = input_boxes[user_variable_name].get()
+            if value != old_value and user_variable_name in CONSTANT_USER_VARIABLES:
                 restart_required = True
 
-            USER_CONSTANTS.update(constant_name, value)
+            USER_VARIABLES.update(user_variable_name, value)
 
         if restart_required == True:
             restart_program_fromTkWin()
@@ -238,8 +261,6 @@ desc_text_strvar2 = tk.StringVar()
 desc_text2 = tk.Label(desc_section2, textvariable = desc_text_strvar2, justify='left', wraplength=800, padx=5, pady=5, width=105, anchor="w")
 desc_text2.pack(anchor="w")
 
-chosen_log = tk.StringVar()
-chosen_log.set("Choose a script")
 
 ops_treeview_section = tk.ttk.Frame(root)
 ops_treeview_section.grid(row=3,column=0,sticky="ns", padx=15)
@@ -253,13 +274,14 @@ ops_treeview.tag_configure('Running', background='orange')
 ops_treeview.tag_configure('Failed', background='red')
 ops_treeview.tag_configure('None', background='')
 
-ops_treeview_scrollbar = AutoScrollbar(ops_treeview_section, orient="vertical", command = ops_treeview.yview)
+ops_treeview_xscrollbar = AutoScrollbar(ops_treeview_section, orient="horizontal", command = ops_treeview.xview)
+ops_treeview_yscrollbar = AutoScrollbar(ops_treeview_section, orient="vertical", command = ops_treeview.yview)
 
-ops_treeview.config(yscrollcommand = ops_treeview_scrollbar.set)
+ops_treeview.config(xscrollcommand = ops_treeview_xscrollbar.set, yscrollcommand = ops_treeview_yscrollbar.set)
 
 ops_treeview.grid(row=1, column=1,sticky="ns")
-ops_treeview_scrollbar.grid(row=1,column=2,sticky="ns")
-
+ops_treeview_xscrollbar.grid(row=2,column=1,sticky="ew")
+ops_treeview_yscrollbar.grid(row=1,column=2,sticky="ns")
 
 ops_log_section = tk.ttk.LabelFrame(root, text = "Choose a script")
 ops_log_section.grid(row=3,column=1, sticky='nsew', padx=15)
@@ -279,23 +301,28 @@ ops_treeview_section.grid_remove()
 ops_log_section.grid_remove()
 desc_section2.grid_remove()
 
+
+
 def restart_program_fromTkWin():
     root.destroy()
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 def quit_window_fromTkWin():
     root.destroy()
+    exit_handler() # explicitly calling exit handler due to os._exit not allowing atexit to cleanup 
     os._exit(0)
 
 
 def restart_program_fromSysTray(icon, item):
     icon.stop()
     root.destroy()
+    exit_handler()
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 def quit_window_fromSysTray(icon, item):
     icon.stop()
     root.destroy()
+    exit_handler()
     os._exit(0)
 
 def show_window(icon, item):
@@ -340,13 +367,34 @@ restart_button.pack(side="right", padx=5, pady=10)
 
 footer_section = tk.Frame(root)
 threadcount_strvar = tk.StringVar()
-footer_name_label = tk.Label(footer_section, text = f"{USER_CONSTANTS.get('COMPUTER_NAME')}", borderwidth=1, relief="solid", padx=2)
+footer_name_label = tk.Label(footer_section, text = f"{CONSTANT_USER_VARIABLES['COMPUTER_NAME']}", borderwidth=1, relief="solid", padx=2)
 footer_threadcount_label = tk.Label(footer_section, textvariable=threadcount_strvar, borderwidth=1, relief="solid", padx=2)
 footer_section.grid(row=5, column=0, columnspan=2, sticky="ew")
 footer_threadcount_label.pack(side="right")
 footer_name_label.pack(side="right")
 
 
+
+def exit_handler():
+
+    for process in UserScripts.ActiveSubprocesses.processes: 
+        process.kill() 
+
+    folder = CONSTANT_USER_VARIABLES['USERSCRIPTS_FOLDER_PATH']
+    if os.path.isdir(folder):
+        shutil.rmtree(folder)
+    # for filename in os.listdir(folder):
+    #     file_path = os.path.join(folder, filename)
+    #     try:
+    #         if os.path.isfile(file_path) or os.path.islink(file_path):
+    #             os.unlink(file_path)
+    #         elif os.path.isdir(file_path):
+    #             shutil.rmtree(file_path)
+    #     except Exception as e:
+    #         print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+
+atexit.register(exit_handler)
 
 
 
@@ -372,7 +420,7 @@ class Logger():
 
 
     def updatelog(self, text, end=None):
-        max_len = USER_CONSTANTS.get("MAX_LOG_LENGTH")
+        max_len = USER_VARIABLES.get("MAX_LOG_LENGTH")
         if max_len != None:
             if len(self.log)==max_len:
                 self.log.pop(0)
@@ -433,7 +481,7 @@ def protect_connection(codetext):
         try:
             exec(codetext)
             mainlogger1.deletelog()
-            mainlogger1.updatelog(f'{USER_CONSTANTS.get("COMPUTER_NAME")} is currently connected to Exterior/{USER_CONSTANTS.get("COMPUTER_NAME")}')
+            mainlogger1.updatelog(f"{CONSTANT_USER_VARIABLES['COMPUTER_NAME']} is currently connected to Exterior/{CONSTANT_USER_VARIABLES['COMPUTER_NAME']}")
             break
         except:
             mainlogger1.deletelog()
@@ -449,7 +497,13 @@ def protect_connection(codetext):
 
 
 def update_local_user_scripts():
-    user_scripts_names = user_scripts_compiler.update_scripts(USER_CONSTANTS.get("GITHUB_ACCESS_TOKEN"), USER_CONSTANTS.get("GITHUB_USERNAME"), USER_CONSTANTS.get("GITHUB_REPO_NAME"), f"{USER_CONSTANTS.get('PROJECT_PATH')}/local_user_scripts")
+    for process in UserScripts.ActiveSubprocesses.processes: 
+        process.kill() 
+    if not USER_VARIABLES.is_modified("USERSCRIPTS_FOLDER_PATH"):
+        if os.path.isdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]):
+            shutil.rmtree(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"])
+        os.mkdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]) # Creating /local_user_scripts folder if user has not customized user scripts folder location
+    user_scripts_names = user_scripts_compiler.update_scripts(CONSTANT_USER_VARIABLES['GITHUB_ACCESS_TOKEN'], CONSTANT_USER_VARIABLES['GITHUB_USERNAME'], CONSTANT_USER_VARIABLES["GITHUB_REPO_NAME"], f"{CONSTANT_USER_VARIABLES['USERSCRIPTS_FOLDER_PATH']}")
     user_scripts_statuses = dict()
     for user_script_name in user_scripts_names:
         user_scripts_statuses[user_script_name] = 'None'
@@ -468,7 +522,7 @@ def main():
     
     global process_log_extractor_thread
 
-    mainlogger1.updatelog(f'Welcome {USER_CONSTANTS.get("COMPUTER_NAME")} !')
+    mainlogger1.updatelog(f"Welcome {CONSTANT_USER_VARIABLES['COMPUTER_NAME']} !")
 
     while True:
         try:
@@ -476,27 +530,30 @@ def main():
             client = exterior_connection.authenticate('creds/service_account_credentials.json')
             mainlogger1.updatelog(f"Done.")
             break
-        except:
+        except Exception as e:
+            print(e)
             countdown(60, f"Authentication Failed. Next Attempt to Authenticate:", logger = mainlogger1)
 
 
     while True:        
         try:
-            sheet = exterior_connection.open_sheet('Exterior',USER_CONSTANTS.get("COMPUTER_NAME"), client)
-            mainlogger1.updatelog(f"Connected with Exterior/{USER_CONSTANTS.get('COMPUTER_NAME')}")
+            sheet = exterior_connection.open_sheet('Exterior',CONSTANT_USER_VARIABLES['COMPUTER_NAME'], client)
+            mainlogger1.updatelog(f"Connected with Exterior/{CONSTANT_USER_VARIABLES['COMPUTER_NAME']}")
             break
-        except:
-            countdown(60, f"Exterior/{USER_CONSTANTS.get('COMPUTER_NAME')} could not be opened. Next Attempt:", logger = mainlogger1)
+        except Exception as e:
+            print(e)
+            countdown(60, f"Exterior/{CONSTANT_USER_VARIABLES['COMPUTER_NAME']} could not be opened. Next Attempt:", logger = mainlogger1)
 
 
     while True:
         try:
-            mainlogger1.updatelog(f"Fetching user-scripts from GitHub/{USER_CONSTANTS.get('GITHUB_USERNAME')}/{USER_CONSTANTS.get('GITHUB_REPO_NAME')}...")
+            mainlogger1.updatelog(f"Fetching user-scripts from GitHub/{CONSTANT_USER_VARIABLES['GITHUB_USERNAME']}/{CONSTANT_USER_VARIABLES['GITHUB_REPO_NAME']}...")
             UserScripts.statuses = update_local_user_scripts()
             mainlogger1.updatelog(f"Done.")
             break
-        except:
-            countdown(60, f"Failed to fetch user-scripts from GitHub/{USER_CONSTANTS.GITHUB_USERNAME}/{USER_CONSTANTS.GITHUB_REPO_NAME}. Next Attempt:", logger = mainlogger1)
+        except Exception as e:
+            print(e)
+            countdown(60, f"Failed to fetch user-scripts from GitHub/{CONSTANT_USER_VARIABLES['GITHUB_USERNAME']}/{CONSTANT_USER_VARIABLES['GITHUB_REPO_NAME']}. Next Attempt:", logger = mainlogger1)
 
 
     for key in UserScripts.statuses.keys():
@@ -550,16 +607,30 @@ def main():
                     else: # Element doesnt exist
             
                         new_env = os.environ.copy()
-                        new_env["PYTHONPATH"]=USER_CONSTANTS.get("PROJECT_PATH")
+
+                        for user_variable_name in CONSTANT_USER_VARIABLES:
+                            new_env["SC_"+user_variable_name] = CONSTANT_USER_VARIABLES[user_variable_name]
+
+                        script_path = os.path.join(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"],key)
+                        script_parent_dir_path = os.path.dirname(os.path.abspath(script_path))
+                
+                        # new_env["PYTHONPATH"]=CONSTANT_USER_VARIABLES["APP_FOLDER_PATH"]
+                        # new_env["PYTHONPATH"] = script_parent_dir_path 
+                        new_env["PYTHONPATH"] = script_parent_dir_path
                         new_env["PYTHONUNBUFFERED"] = "1"
+                        
                         extension = os.path.splitext(key)[1]
+                        
                         if extension == '.py':
-                            UserScripts.ActiveSubprocesses.processes[key] = subprocess.Popen(["python",f"{USER_CONSTANTS.get('PROJECT_PATH')}/local_user_scripts/user_script_files/{key}"], cwd = USER_CONSTANTS.get('PROJECT_PATH'), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, env=new_env)
+                            script_command = "python"
                         elif extension == '.pyw':
-                            UserScripts.ActiveSubprocesses.processes[key] = subprocess.Popen(["pythonw",f"{USER_CONSTANTS.get('PROJECT_PATH')}/local_user_scripts/user_script_files/{key}"], cwd = USER_CONSTANTS.get('PROJECT_PATH'), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, env=new_env)
+                            script_command = "pythonw"
+
+                        UserScripts.ActiveSubprocesses.processes[key] = subprocess.Popen([script_command, script_path], cwd = script_parent_dir_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, env=new_env)
                         
                         protect_connection(f"exterior_connection.update_parameter_status(sheet, '{key}', 'Running ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
                         UserScripts.statuses[key]="Running"
+                
                 elif Exterior.records[key]=='OFF':
             
                     if key in UserScripts.ActiveSubprocesses.processes.keys():
@@ -570,6 +641,8 @@ def main():
                             UserScripts.ActiveSubprocesses.processes[key].terminate()
                         del UserScripts.ActiveSubprocesses.processes[key]                    
                     else:
+                        if exterior_connection.get_parameter_status(sheet=None, parameter_name=key, sheet_values=Exterior.all_sheet_values)[0:7] == "Running": # Status may be stuck at running if program was shut abruptly before. Removing the status now -
+                            protect_connection(f"exterior_connection.update_parameter_status(sheet, '{key}', '' , Exterior.all_sheet_values)")
                         UserScripts.statuses[key]="None"
 
                 else:
@@ -610,6 +683,7 @@ def show_selected_log():
         ops_treeview_section.grid_remove()
         ops_log_section.grid_remove()
         desc_section2.pack_forget()
+        main.initialized = None
 
 
     threadcount_strvar.set(f"Threads: {threading.active_count()}")
@@ -618,50 +692,59 @@ def show_selected_log():
         desc_text_strvar1.set(mainlogger1.log[-1])
     else: 
         desc_text_strvar1.set('')
-        # desc_text1.delete("1.0","end")   
-        # desc_text1.insert("1.0", mainlogger1.log[-1])
-
+  
   
     if len(mainlogger2.log)>0:
         desc_text_strvar2.set(mainlogger2.log[-1])
     else:
         desc_text_strvar2.set('')
-        # desc_text2.delete("1.0","end")   
-        # desc_text2.insert("1.0", mainlogger2.log[-1])
-
   
+  
+
     selection_list = ops_treeview.item(ops_treeview.focus())['values']
     
+
     if len(selection_list)>0:
         selection = selection_list[0] 
-        chosen_log.set(selection)
-        ops_log_section.configure(text = selection)
-        yscrollbar_posn = ops_log.yview()
-        xscrollbar_posn = ops_log.xview()
-        ops_log.configure(state="normal")
-        ops_log.delete("1.0","end")   
-        ops_log.insert("1.0", UserScripts.ActiveSubprocesses.loggers[selection].getlog())
-        ops_log.configure(state="disabled")
         
-        if float(yscrollbar_posn[1]) == 1.0:
-            # So that user can control scrollbar without its position resetting repeatedly        
-            ops_log.yview_moveto(yscrollbar_posn[1]) 
-        else:
-            # So that scrollbar appears at bottom if not in use
-            ops_log.yview_moveto(yscrollbar_posn[0])
+        if selection in list(UserScripts.ActiveSubprocesses.loggers.keys()):
+            
+            ops_log_section.configure(text = selection)
+            
+            yscrollbar_posn = ops_log.yview()
+            xscrollbar_posn = ops_log.xview()
+            
+            ops_log.configure(state="normal")
+            ops_log.delete("1.0","end")   
+            ops_log.insert("1.0", UserScripts.ActiveSubprocesses.loggers[selection].getlog())
+            ops_log.configure(state="disabled")
+            
+            if float(yscrollbar_posn[1]) == 1.0:
+                # So that user can control scrollbar without its position resetting repeatedly        
+                ops_log.yview_moveto(yscrollbar_posn[1]) 
+            else:
+                # So that scrollbar appears at bottom if not in use
+                ops_log.yview_moveto(yscrollbar_posn[0])
 
-        ops_log.xview_moveto(xscrollbar_posn[0])
+            ops_log.xview_moveto(xscrollbar_posn[0])
+
+    else:
+
+        ops_log_section.configure(text = "Choose a script")
 
 
-    if list(ops_treeview.get_children()) != list(UserScripts.statuses.keys()):
+
+    common = [script for script in list(UserScripts.statuses.keys()) if script in list(Exterior.records.keys())]
+    if list(ops_treeview.get_children()) != common:
         for item in ops_treeview.get_children():
             ops_treeview.delete(item)
-        for user_script_name in UserScripts.statuses.keys():
+        for user_script_name in common:
             ops_treeview.insert('', index = "end",iid=user_script_name, values=(user_script_name))
     else:
         # Settings colours to scripts based on status
-        for key in UserScripts.statuses.keys():
-            ops_treeview.item(key, tags = UserScripts.statuses[key])
+        for user_script_name in common:
+            ops_treeview.item(user_script_name, tags = UserScripts.statuses[user_script_name])
+
 
     root.after(200, show_selected_log)
 
@@ -676,21 +759,12 @@ main_thread.start()
 
 
 
-def exit_handler():
-    for process in UserScripts.ActiveSubprocesses.processes: 
-        process.kill() 
- 
-
-atexit.register(exit_handler)
-
-
-
 
 def mainloop_callback():
-    if not USER_CONSTANTS.is_modified():
+    if not USER_VARIABLES.is_modified():
         set_defaults()
     else:
-        if USER_CONSTANTS.get("SHOW_WINDOW") is False:
+        if USER_VARIABLES.get("SHOW_WINDOW") is False:
             root.after(10, withdraw_window)
     root.after(500, show_selected_log)
 
