@@ -644,6 +644,7 @@ def main():
 
                 else:
                     pass
+
         if UserScripts.ActiveSubprocesses.processes:
             if not process_log_extractor_thread.is_alive():
                 process_log_extractor_thread = threading.Thread(target = process_log_extractor)

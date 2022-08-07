@@ -17,7 +17,6 @@ This is a python application that enables a user to remotely execute user-script
 - Google Account
 - Google API Console Service Account
 - `creds/service_account_credentials.json` file (Credentials for Google Service Account)
-- `creds/client_secret.json` file (Credentials for Google Drive API)
 - GitHub Account 
 - GitHub Personal Access Token (Only if using private repository to store user-scripts)
 
@@ -30,7 +29,7 @@ This is a python application that enables a user to remotely execute user-script
 ### 1. Setting up your Google API Console Service Account
 1. Go to [Google's API Console](https://console.developers.google.com/) and sign in to your google account
 2. Create a project.
-3. Create a service account integrated using the Google Sheets API and Google Drive API. 
+3. Create a service account integrated using the Google Sheets API. 
 4. Download the credentials as `service_account_credentials.json` file
 5. Store the `service_account_credentials.json` file in the `creds/` folder. 
 6. Done.
@@ -40,7 +39,7 @@ Also see [Google APIs Terms of Service](https://developers.google.com/terms).
 
 ### 2. Setting up Exterior (Online Google spreadsheet)
 This is essentially a Google Sheets document i.e. a spreadsheet. It acts as a controller containing several parameters used to control the target computer remotely. 
-To set it up, create a Google Sheets document identical to this [copy of my version of Exterior](https://docs.google.com/spreadsheets/d/1wjEeu2_Jghxce32vzDpUoDYcjO-0N8ttbz5VEFvCqRI/edit?usp=sharing) inside the google drive folder named Exterior.
+To set it up, create a Google Sheets document identical to this [copy of my version of Exterior](https://docs.google.com/spreadsheets/d/1wjEeu2_Jghxce32vzDpUoDYcjO-0N8ttbz5VEFvCqRI/edit?usp=sharing). You may store this inside another google drive folder named Exterior, for convenience.
 
 <br>
 
@@ -104,19 +103,6 @@ To add a comment that will not be parsed by the program, set the value of a cell
 **See examples of user-script parameters and comments [here](https://docs.google.com/spreadsheets/d/1wjEeu2_Jghxce32vzDpUoDYcjO-0N8ttbz5VEFvCqRI/edit?usp=sharing)**
 <br>
 **NOTE:** When creating parameters, ensure headings of one parameter do not lie in the same row as values of another parameter. If you do this, the program may extract values incorrectly or throw an error.
-
-<br>
-<br>
-
-## Other important files:
-
-These files may be useful while creating user-scripts. 
-
-#### 1. `ggl_api/exterior_connection.py`
-`ggl_api/connection.py` holds functions that help establishing connection with the Exterior spreadsheet as well as updating its values easily. The functions are made such that the number of API requests sent is lesser than otherwise.
-
-#### 2. `ggl_api/gdprocesses.py`
-`ggl_api/gdprocesses.py` holds functions that help easily upload/download files or folders to/from Google Drive.
 
 <br>
 <br>
