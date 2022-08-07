@@ -144,26 +144,23 @@ def set_defaults():
 
     def browsefunc(input_box_key):
         foldername =tk.filedialog.askdirectory()
-        input_boxes[input_box_key].insert("end", foldername) # add this
-
+        input_boxes[input_box_key].delete(0, "end")
+        input_boxes[input_box_key].insert(0, foldername) 
 
     
     input_labels["APP_FOLDER_PATH"] = tk.Label(input_frames["APP_FOLDER_PATH"], text = "Enter the path of the app directory.")
     input_labels["APP_FOLDER_PATH"].pack(anchor="w")
-    input_boxes["APP_FOLDER_PATH"] = tk.ttk.Entry(input_frames["APP_FOLDER_PATH"], width=40)
+    input_boxes["APP_FOLDER_PATH"] = tk.ttk.Entry(input_frames["APP_FOLDER_PATH"], width=80)
     input_boxes["APP_FOLDER_PATH"].insert("end", user_variables_dict["APP_FOLDER_PATH"])
     input_boxes["APP_FOLDER_PATH"].pack(anchor="w", side="left",padx=10, pady=5)
-
     input_app_folder_path_browse_button = tk.ttk.Button(input_frames["APP_FOLDER_PATH"],text="Browse",command= lambda: browsefunc("APP_FOLDER_PATH"))
     input_app_folder_path_browse_button.pack(side="left")
 
-
     input_labels["USERSCRIPTS_FOLDER_PATH"] = tk.Label(input_frames["USERSCRIPTS_FOLDER_PATH"], text = "Enter the path of the directory for storing user-scripts downloaded from GitHub.")
     input_labels["USERSCRIPTS_FOLDER_PATH"].pack(anchor="w")
-    input_boxes["USERSCRIPTS_FOLDER_PATH"] = tk.ttk.Entry(input_frames["USERSCRIPTS_FOLDER_PATH"], width=40)
+    input_boxes["USERSCRIPTS_FOLDER_PATH"] = tk.ttk.Entry(input_frames["USERSCRIPTS_FOLDER_PATH"], width=80)
     input_boxes["USERSCRIPTS_FOLDER_PATH"].insert("end", user_variables_dict["USERSCRIPTS_FOLDER_PATH"])
     input_boxes["USERSCRIPTS_FOLDER_PATH"].pack(anchor="w", side="left",padx=10, pady=5)
-
     input_userscripts_folder_path_browse_button = tk.ttk.Button(input_frames["USERSCRIPTS_FOLDER_PATH"],text="Browse",command= lambda: browsefunc("USERSCRIPTS_FOLDER_PATH"))
     input_userscripts_folder_path_browse_button.pack(side="left")
 
@@ -305,6 +302,7 @@ desc_section2.grid_remove()
 
 def restart_program_fromTkWin():
     root.destroy()
+    exit_handler()
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 def quit_window_fromTkWin():
@@ -499,10 +497,9 @@ def protect_connection(codetext):
 def update_local_user_scripts():
     for process in UserScripts.ActiveSubprocesses.processes: 
         process.kill() 
-    if not USER_VARIABLES.is_modified("USERSCRIPTS_FOLDER_PATH"):
-        if os.path.isdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]):
-            shutil.rmtree(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"])
-        os.mkdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]) # Creating /local_user_scripts folder if user has not customized user scripts folder location
+    if os.path.isdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]):
+        shutil.rmtree(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"])
+    os.mkdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]) 
     user_scripts_names = user_scripts_compiler.update_scripts(CONSTANT_USER_VARIABLES['GITHUB_ACCESS_TOKEN'], CONSTANT_USER_VARIABLES['GITHUB_USERNAME'], CONSTANT_USER_VARIABLES["GITHUB_REPO_NAME"], f"{CONSTANT_USER_VARIABLES['USERSCRIPTS_FOLDER_PATH']}")
     user_scripts_statuses = dict()
     for user_script_name in user_scripts_names:
