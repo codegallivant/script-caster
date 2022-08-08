@@ -1,6 +1,9 @@
 from src.common import *
 
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+
 if not USER_VARIABLES.is_created():
     USER_VARIABLES.create()
 
@@ -411,8 +414,9 @@ class UserScripts:
 
 
 
-class Logger():
-    def __init__(self, log):
+class Logger:
+
+    def __init__(self, log = ''):
         self.log=[]
         self.log.append(log)
 
@@ -438,8 +442,10 @@ class Logger():
         return totalLog
 
 
-mainlogger1 = Logger('')
-mainlogger2 = Logger('')
+
+mainlogger1 = Logger()
+mainlogger2 = Logger()
+
 
 
 
@@ -491,6 +497,7 @@ def protect_connection(codetext):
                 else:
                     mainlogger1.updatelog("Internet connection lost.")
                     countdown(60, "Next attempt to connect: ", logger = mainlogger2)
+
 
 
 
@@ -554,7 +561,7 @@ def main():
 
 
     for key in UserScripts.statuses.keys():
-        UserScripts.ActiveSubprocesses.loggers[key] = Logger('')
+        UserScripts.ActiveSubprocesses.loggers[key] = Logger()
 
     
     main.initialized = True
