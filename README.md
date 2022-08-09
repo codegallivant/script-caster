@@ -44,9 +44,9 @@ To set it up, create a Google Sheets document identical to this [copy of my vers
 - This repository is for storing the scripts which you want to create and run remotely.
 - Currently only .py and .pyw file extensions are supported
 - Steps for creating scripts:
-  1. Create a GitHub repository. 
-  2. Create the script inside this repository.
-  3. Create a switch for this script in Exterior.
+  1. Create the script inside your chosen repository.
+  2. Create a switch for this script in Exterior.
+- Note that all scripts must be stored in a single repository. An example repository linked above.
 
 
 <br>
