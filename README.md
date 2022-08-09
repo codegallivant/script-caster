@@ -6,7 +6,7 @@ Python application that enables user to remotely create and execute scripts on t
 
 <br>
 
-## Prerequisites:
+## Prerequisites
 - Python 3+
 - pip modules (See `requirements.txt` for list of modules)
 - Google Account
@@ -23,13 +23,12 @@ Python application that enables user to remotely create and execute scripts on t
 <br>
 
 ### 1. Setting up your Google API Console Service Account
-1. Go to [Google's API Console](https://console.developers.google.com/) and sign in to your google account
+1. Go to [Google's API Console](https://console.developers.google.com/) and sign in to your google account.
 2. Create a project.
 3. Create a service account enabling the Google Sheets API. 
-4. Download the credentials as `service_account_credentials.json` file
+4. Download the credentials as `service_account_credentials.json` file.
 5. Store the `service_account_credentials.json` file in the `creds/` folder. 
-6. Done.
-Also see [Google APIs Terms of Service](https://developers.google.com/terms).
+6. Done. Also see [Google APIs Terms of Service](https://developers.google.com/terms).
 
 <br>
 
@@ -42,12 +41,12 @@ To set it up, create a Google Sheets document identical to this [copy of my vers
 ### 3. Setting up a GitHub repository for your scripts
 - **[Sample scripts repository](https://github.com/codegallivant/sample-scriptcaster-scripts/)**
 - This repository is for storing the scripts which you want to create and run remotely.
-- Currently only .py and .pyw file extensions are supported
+- Currently only .py and .pyw file extensions are supported.
 - Steps for creating scripts:
   1. Create the script inside your chosen repository.
   2. Create a switch for this script in Exterior.
 - Note that all scripts must be stored in a single repository. An example repository linked above.
-
+- If you are using a private repository, you must create a GitHub Personal Access Token. To do this, after logging into your GitHub account, see `Settings`>`Developer Settings`>`Personal Access Token`.
 
 <br>
 
@@ -79,16 +78,16 @@ The program fetches data from Exterior every few seconds. Based on parameter val
 ### Hard-coded parameters
 These parameters have been hard-coded into the main files of the program and are thoroughly involved in the code's execution.
 - `CONTACT_STATUS`
-  - Read only
+  - Read only.
   - Specifies whether program is able to access Exterior or not. 
   - The value of this parameter is related to other hard-coded parameters such as `LAST_CONTACT_TIME`, `CURRENT_TIME` and `TIME_DIFFERENCE`, which are also read-only.
 - `REQUEST_INTERVAL`
-  - Input accepted
+  - Input accepted.
   - Specify the interval(in integer seconds) between each fetch request to the spreadsheet
   - **IMPORTANT:** Specifying a very low interval and continuously communicating with the program via Google API can be dangerous. See Google API [usage limits](https://developers.google.com/sheets/api/limits). Minimum interval time to avoid rate-limiting is approximately 5 seconds. Recommended interval time is 10-30 seconds. 
 - `UPDATE_LOCAL_USER_SCRIPTS`
-  - Input accepted
-  - Checkmark this parameter if you've just changed scripts in your repo and want the changes to be downloaded locally. They will only be considered by the program after you've marked this parameter.
+  - Input accepted.
+  - Checkmark this parameter if you've just made changes in your scripts repo, while the app is already running, and want the changes to be downloaded locally. The changes in your repo will only be considered by the app after you've marked this parameter.
   
 ### Script parameters
 - These parameters are used to manage the functioning of scripts. 
