@@ -59,13 +59,13 @@ pip install -r requirements.txt
 <br>
 
 ### 5. Running the application
-**To run script-caster from the command line, execute the following code from the app root directory -**
+To run the app, just click on the file `main.pyw` and open it with Python.<br>
+Alternatively, if you want to run script-caster from the command line, execute the following code from the app root directory -
 ```
 pythonw main.pyw
 ```
-Alternatively, you can just click on the file and open it with Python.<br>
 Upon running, the settings menu will automatically pop up, if settings are not already set. Then you'll have to fill in several options including your details for Exterior and GitHub.<br>
-Done.
+Done. Now you'll be able to create and execute scripts remotely.
 
 <br>
 <br>
