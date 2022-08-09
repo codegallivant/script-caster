@@ -2,7 +2,7 @@
 
 ![GitHub release](https://img.shields.io/badge/release-v2.1.0-blue)
 
-This is a python application that enables a user to remotely execute scripts on their machine.
+Python application that enables user to remotely create and execute scripts on their machine.
 
 <br>
 
@@ -64,8 +64,9 @@ pip install -r requirements.txt
 ```
 pythonw main.pyw
 ```
-Alternatively, you can just click on the file and open it with Python.
-Upon running, the settings menu will automatically pop up, if they are not already set. Then you'll have to fill in several options including your details for Exterior and GitHub.  
+Alternatively, you can just click on the file and open it with Python.<br>
+Upon running, the settings menu will automatically pop up, if settings are not already set. Then you'll have to fill in several options including your details for Exterior and GitHub.<br>
+Done.
 
 <br>
 <br>
@@ -104,4 +105,11 @@ To add a comment that will not be parsed by the program, set the value of a cell
  
 - This program is supposed to be able to run on all operating systems, though it has only been tested on Windows.
 - Scripts can only be executed on a target computer only after the application has been installed into the target and it is awake, having access to the Internet.
-- [Icon(`favicon.ico`) credits: www.flaticon.com](https://www.flaticon.com/premium-icon/cloud-service_3211343?term=cloud&page=1&position=1&page=1&position=1&related_id=3211343&origin=search)
+
+<br>
+
+## Credits for external libraries and files
+- `tkthemes/azure-ttk-theme` (Theme style for tkinter window) - 
+  https://github.com/rdbende/Azure-ttk-theme
+- `favicon.ico`-
+  [Flaticon](https://www.flaticon.com/premium-icon/cloud-service_3211343?term=cloud&page=1&position=1&page=1&position=1&related_id=3211343&origin=search)
