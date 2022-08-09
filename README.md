@@ -2,7 +2,7 @@
 
 ![GitHub release](https://img.shields.io/badge/release-v2.1.0-blue)
 
-This is a python application that enables a user to remotely execute user-scripts on their computer.
+This is a python application that enables a user to remotely execute scripts on their machine.
 
 <br>
 
@@ -91,7 +91,7 @@ These parameters have been hard-coded into the main files of the program and are
   
 ### Script parameters
 - These parameters are used to manage the functioning of scripts. 
-- To create a switch parameter, set the value of a cell to the script's name. In the cell below this one, you can set it to `ON` or `OFF`. Use of conditional formatting and data validation is recommended.
+- To create a switch parameter, set the value of a cell to the script's name. In the cell below this one, you can set it to `ON` or `OFF`. Use of conditional formatting and data validation is recommended. Note that heading rows and value rows should not conflict.
 - To see the status for the execution of the script, in the same row as the switch parameter, do as follows - Set the value of a cell to `STATUS`. In the cell below this one, the program will automatically set the value as one of the following depending on the script's result - `Running`, `Done`, `Failed`, along with the timestamp.
 - In your scripts, you can also make contact with Exterior and fetch/update values. To know more, see [gspread documentation](https://docs.gspread.org/en/latest/)
 
@@ -100,17 +100,8 @@ To add a comment that will not be parsed by the program, set the value of a cell
 
 <br>
 
-<br>
-**NOTE:** When creating parameters, ensure headings of one parameter(or comment) do not lie in the same row as values of another parameter(or comment). If you do this, the program may extract values incorrectly or throw an error.
-
-<br>
-<br>
-
-## Note
+## Notes
  
 - This program is supposed to be able to run on all operating systems, though it has only been tested on Windows.
-- Scripts can only be executed on a target computer only if the application has been installed into the target computer.
-- Program can only run on the target while the target computer while the target is awake.
-- Program will only be able to fetch data and execute accordingly if it has access to the Internet.
-- This is not meant as a hacking tool, nor does it suit one.
+- Scripts can only be executed on a target computer only after the application has been installed into the target and it is awake, having access to the Internet.
 - [Icon(`favicon.ico`) credits: www.flaticon.com](https://www.flaticon.com/premium-icon/cloud-service_3211343?term=cloud&page=1&position=1&page=1&position=1&related_id=3211343&origin=search)
