@@ -40,17 +40,6 @@ def is_modified(user_variable_name=None):
 	else: # Check only specified constant
 		modified = user_variables_dict[user_variable_name] != default_data[user_variable_name]  
 	return modified
-
-
-# def load():
-#     user_variables_dict = get_dict()
-    # for user_variable_name in user_variables_dict.keys():
-    #     if user_variables_dict[user_variable_name] == "True" or user_variables_dict[user_variable_name]=="False" or user_variables_dict[user_variable_name]=="None":
-    #         user_variables_dict[user_variable_name] = eval(user_variables_dict[user_variable_name])
-#         exec(f"""
-# global {user_variable_name}
-# {user_variable_name} = user_variables_dict[user_variable_name]
-# """)
     
 
 def get(user_variable_name):
@@ -66,9 +55,4 @@ def update(user_variable_name, new_variable_value):
     json.dump(data, f)
     f.truncate()
     f.close()
-    # load()
-
-
-# if is_created():
-# 	load()
-
+  

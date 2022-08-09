@@ -378,8 +378,8 @@ footer_name_label.pack(side="right")
 
 def exit_handler():
 
-    for process in UserScripts.ActiveSubprocesses.processes: 
-        process.kill() 
+    for process in list(UserScripts.ActiveSubprocesses.processes.keys()): 
+        UserScripts.ActiveSubprocesses.processes[process].terminate() 
 
     folder = CONSTANT_USER_VARIABLES['USERSCRIPTS_FOLDER_PATH']
     if os.path.isdir(folder):
@@ -568,6 +568,9 @@ def main():
 
     while True:                
 
+
+        print(UserScripts.ActiveSubprocesses.processes)
+
         protect_connection(f'Exterior.all_sheet_values, Exterior.records = exterior_connection.get_parameter_values(sheet)')
 
         protect_connection(f"exterior_connection.update_parameter_value(sheet,'LAST_CONTACT_TIME', datetime.datetime.fromtimestamp(time.time()).strftime('%m/%d/%Y %H:%M:%S'), Exterior.all_sheet_values)")
@@ -587,15 +590,15 @@ def main():
             
             protect_connection(f"exterior_connection.update_parameter_value(sheet, 'UPDATE_LOCAL_USER_SCRIPTS', 'OFF', Exterior.all_sheet_values)")
 
-        for key in UserScripts.statuses.keys():
+        for key in list(UserScripts.statuses.keys()):
             
             if key in Exterior.records:
                 
                 if Exterior.records[key] == 'ON':
                     
-                    if key in UserScripts.ActiveSubprocesses.processes.keys():  #Element exists 
+                    if key in list(UserScripts.ActiveSubprocesses.processes.keys()):  #Element exists 
                         
-                        if UserScripts.ActiveSubprocesses.processes[key].poll() != None: #Thread is not running
+                        if UserScripts.ActiveSubprocesses.processes[key].poll() != None: #Subprocess is not running
                           
                             protect_connection(f"exterior_connection.update_parameter_value(sheet, '{key}', 'OFF', Exterior.all_sheet_values)")
                           
@@ -638,7 +641,7 @@ def main():
                 elif Exterior.records[key]=='OFF':
             
                     if key in UserScripts.ActiveSubprocesses.processes.keys():
-                        if UserScripts.ActiveSubprocesses.processes[key].poll() == None: #Thread is running
+                        if UserScripts.ActiveSubprocesses.processes[key].poll() == None: #Subprocess is running
                             protect_connection(f"exterior_connection.update_parameter_status(sheet, '{key}', 'Done ({datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')})', Exterior.all_sheet_values)")
                             UserScripts.statuses[key]="Done"
                             #Kill process
