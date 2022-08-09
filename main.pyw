@@ -568,9 +568,6 @@ def main():
 
     while True:                
 
-
-        print(UserScripts.ActiveSubprocesses.processes)
-
         protect_connection(f'Exterior.all_sheet_values, Exterior.records = exterior_connection.get_parameter_values(sheet)')
 
         protect_connection(f"exterior_connection.update_parameter_value(sheet,'LAST_CONTACT_TIME', datetime.datetime.fromtimestamp(time.time()).strftime('%m/%d/%Y %H:%M:%S'), Exterior.all_sheet_values)")
