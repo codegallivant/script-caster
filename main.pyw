@@ -200,15 +200,20 @@ def set_defaults():
 
 
     def set_new_defaults():
+
         restart_required = False
+        
         for user_variable_name in user_variables_dict.keys():
+        
             old_value = user_variables_dict[user_variable_name]
+
             if user_variable_name == "SHOW_WINDOW":
                 value = not bool(default_show_window_intvar.get())
             elif user_variable_name == "MAX_LOG_LENGTH":
                 value = int(input_boxes[user_variable_name].get())
             else:
                 value = input_boxes[user_variable_name].get()
+                
             if value != old_value and user_variable_name in CONSTANT_USER_VARIABLES:
                 restart_required = True
 
@@ -502,8 +507,8 @@ def protect_connection(codetext):
 
 
 def update_local_user_scripts():
-    for process in UserScripts.ActiveSubprocesses.processes: 
-        process.kill() 
+    for process in list(UserScripts.ActiveSubprocesses.processes.keys()): 
+        UserScripts.ActiveSubprocesses.processes[process].terminate() 
     if os.path.isdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]):
         shutil.rmtree(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"])
     os.mkdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]) 
