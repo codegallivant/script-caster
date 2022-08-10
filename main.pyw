@@ -48,14 +48,14 @@ class AutoScrollbar(tk.ttk.Scrollbar): # Custom class is used so that scrollbar 
     def pack(self, **kw):
            
         # If pack is used it throws an error
-        raise (TclError,"pack cannot be used with \
+        raise (tk.TclError,"pack cannot be used with \
         this widget")
        
     # Defining place method
     def place(self, **kw):
            
         # If place is used it throws an error
-        raise (TclError, "place cannot be used  with \
+        raise (tk.TclError, "place cannot be used  with \
         this widget")
 
 
