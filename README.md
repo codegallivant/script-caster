@@ -1,6 +1,6 @@
 # script-caster
 
-![GitHub release](https://img.shields.io/badge/release-v2.1.1-blue)
+![GitHub release](https://img.shields.io/badge/release-v2.1.0-blue)
 
 Python application that enables user to remotely create and execute scripts on their machine.
 
