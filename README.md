@@ -94,7 +94,7 @@ These parameters have been hard-coded into the main files of the program and are
 - To create a switch parameter, set the value of a cell to the script's name. In the cell below this one, you can set it to `ON` or `OFF`. Use of conditional formatting and data validation is recommended.
 - To see the status for the execution of the script, in the same row as the switch parameter, do as follows - Set the value of a cell to `STATUS`. In the cell below this one, the program will automatically set the value as one of the following depending on the script's result - `Running`, `Done`, `Failed`, along with the timestamp.
 - Note that heading rows and value rows should not conflict.
-- In your scripts, you can also make contact with Exterior and fetch/update values. To know more, see [gspread documentation](https://docs.gspread.org/en/latest/).
+- In your scripts, you can also make contact with Exterior and fetch/update values. To know more, see [gspread documentation](https://docs.gspread.org/en/latest/). You can also check the sample repository(linked above) for an importable python file that makes interaction with Exterior easier.
 
 ### Comments
 To add a comment that will not be parsed by the program, set the value of a cell to `COMMENT`. In the cell below this one, you can set the comment. 
