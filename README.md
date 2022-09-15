@@ -2,7 +2,7 @@
 
 ![GitHub release](https://img.shields.io/badge/release-v2.1.0-blue)
 
-Python application that enables user to remotely create and execute scripts on their machine.
+Python application that enables users to remotely create and execute scripts on their machines.
 
 <br>
 
