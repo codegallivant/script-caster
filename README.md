@@ -84,7 +84,7 @@ These parameters have been hard-coded into the main files of the program and are
 - `REQUEST_INTERVAL`
   - Input accepted.
   - Specify the interval(in integer seconds) between each fetch request to the spreadsheet
-  - **IMPORTANT:** Specifying a very low interval and continuously communicating with the program via Google API can be dangerous. See Google API [usage limits](https://developers.google.com/sheets/api/limits). Minimum interval time to avoid rate-limiting is approximately 5 seconds. Recommended interval time is 10-30 seconds. 
+  - **IMPORTANT:** Specifying a very low interval and continuously communicating with the program via Google API can be dangerous. See [Google API usage limits](https://developers.google.com/sheets/api/limits). Minimum interval time to avoid rate-limiting is approximately 5 seconds. Recommended interval time is 10-30 seconds. 
 - `UPDATE_LOCAL_USER_SCRIPTS`
   - Input accepted.
   - Checkmark this parameter if you've just made changes in your scripts repo, while the app is already running, and want the changes to be downloaded locally. The changes in your repo will only be considered by the app after you've marked this parameter.
