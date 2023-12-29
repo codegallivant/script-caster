@@ -2,7 +2,7 @@
 
 ![GitHub release](https://img.shields.io/badge/release-v2.1.0-blue)
 
-Python application that enables user to remotely create and execute scripts on their machine.
+Python application that enables users to remotely create and execute scripts on their machines.
 
 <br>
 
@@ -84,7 +84,7 @@ These parameters have been hard-coded into the main files of the program and are
 - `REQUEST_INTERVAL`
   - Input accepted.
   - Specify the interval(in integer seconds) between each fetch request to the spreadsheet
-  - **IMPORTANT:** Specifying a very low interval and continuously communicating with the program via Google API can be dangerous. See Google API [usage limits](https://developers.google.com/sheets/api/limits). Minimum interval time to avoid rate-limiting is approximately 5 seconds. Recommended interval time is 10-30 seconds. 
+  - **IMPORTANT:** Specifying a very low interval and continuously communicating with the program via Google API can be dangerous. See [Google API usage limits](https://developers.google.com/sheets/api/limits). Minimum interval time to avoid rate-limiting is approximately 5 seconds. Recommended interval time is 10-30 seconds. 
 - `UPDATE_LOCAL_USER_SCRIPTS`
   - Input accepted.
   - Checkmark this parameter if you've just made changes in your scripts repo, while the app is already running, and want the changes to be downloaded locally. The changes in your repo will only be considered by the app after you've marked this parameter.
@@ -94,7 +94,7 @@ These parameters have been hard-coded into the main files of the program and are
 - To create a switch parameter, set the value of a cell to the script's name. In the cell below this one, you can set it to `ON` or `OFF`. Use of conditional formatting and data validation is recommended.
 - To see the status for the execution of the script, in the same row as the switch parameter, do as follows - Set the value of a cell to `STATUS`. In the cell below this one, the program will automatically set the value as one of the following depending on the script's result - `Running`, `Done`, `Failed`, along with the timestamp.
 - Note that heading rows and value rows should not conflict.
-- In your scripts, you can also make contact with Exterior and fetch/update values. To know more, see [gspread documentation](https://docs.gspread.org/en/latest/).
+- In your scripts, you can also make contact with Exterior and fetch/update values. To know more, see [gspread documentation](https://docs.gspread.org/en/latest/). You can also check the sample script repository(linked above) for an importable python file(`lib/exterior_connection.py`) that makes interaction with Exterior easier.
 
 ### Comments
 To add a comment that will not be parsed by the program, set the value of a cell to `COMMENT`. In the cell below this one, you can set the comment. 
