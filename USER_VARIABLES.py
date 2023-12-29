@@ -3,48 +3,45 @@ import os
 
 
 default_data = {
-	"COMPUTER_NAME": "",
-	"APP_FOLDER_PATH":os.path.dirname(os.path.abspath(__file__)),
-	"USERSCRIPTS_FOLDER_PATH": os.path.join(os.path.dirname(os.path.abspath(__file__)),"local_user_scripts/"),
-	"SHOW_WINDOW":False,
-	"MAX_LOG_LENGTH":10000,
-	"GITHUB_USERNAME":"",
-	"GITHUB_REPO_NAME":"",
-	"GITHUB_ACCESS_TOKEN":""
+    "COMPUTER_NAME": "",
+    "APP_FOLDER_PATH":os.path.dirname(os.path.abspath(__file__)),
+    "USERSCRIPTS_FOLDER_PATH": os.path.join(os.path.dirname(os.path.abspath(__file__)),"local_user_scripts/"),
+    "SHOW_WINDOW":False,
+    "MAX_LOG_LENGTH":10000
 }
 
 
 def create():
-	f = open("USER_VARIABLES.json", 'w')
-	f.seek(0)
-	json.dump(default_data, f)
-	f.truncate()
-	f.close()
+    f = open("USER_VARIABLES.json", 'w')
+    f.seek(0)
+    json.dump(default_data, f)
+    f.truncate()
+    f.close()
 
 
 def is_created():
-	return os.path.isfile("USER_VARIABLES.json")
+    return os.path.isfile("USER_VARIABLES.json")
 
 
 def get_dict():
-	f = open("USER_VARIABLES.json",'r')
-	user_variables_dict = json.loads(f.read())
-	f.close()
-	return user_variables_dict
+    f = open("USER_VARIABLES.json",'r')
+    user_variables_dict = json.loads(f.read())
+    f.close()
+    return user_variables_dict
 
 
 def is_modified(user_variable_name=None):
-	user_variables_dict = get_dict()
-	if user_variable_name == None: #Check all constants 
-		modified = user_variables_dict != default_data
-	else: # Check only specified constant
-		modified = user_variables_dict[user_variable_name] != default_data[user_variable_name]  
-	return modified
+    user_variables_dict = get_dict()
+    if user_variable_name == None: #Check all constants 
+        modified = user_variables_dict != default_data
+    else: # Check only specified constant
+        modified = user_variables_dict[user_variable_name] != default_data[user_variable_name]  
+    return modified
     
 
 def get(user_variable_name):
-	data = get_dict()
-	return data[user_variable_name]
+    data = get_dict()
+    return data[user_variable_name]
 
 
 def update(user_variable_name, new_variable_value):

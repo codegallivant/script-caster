@@ -18,9 +18,12 @@ import tkinter.filedialog
 import socket
 import atexit
 import shutil
+import json
+from cryptography.fernet import Fernet
 
 #local imports
 import USER_VARIABLES
+from src.credentials import Credential
 import src.exterior_connection as exterior_connection
 import src.user_scripts_compiler as user_scripts_compiler
 

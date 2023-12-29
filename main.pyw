@@ -15,6 +15,18 @@ del CONSTANT_USER_VARIABLES["SHOW_WINDOW"]
 del CONSTANT_USER_VARIABLES["MAX_LOG_LENGTH"]
 
 
+gitcreds_dict = {"GITHUB_USERNAME":"","GITHUB_REPO_NAME":"", "GITHUB_ACCESS_TOKEN":""}
+gitcreds_json_string = json.dumps(gitcreds_dict)
+GC = Credential("creds/GITHUB_CREDENTIALS.json", gitcreds_json_string)
+gitcreds_dict = json.loads(GC.get_decrypted_content())
+
+
+for credsfilename in os.listdir("creds/"):
+    credsfilepath = os.path.join("creds/", credsfilename)
+    if os.path.isfile(credsfilepath) and credsfilename != ".gitignore":
+        Credential(credsfilepath).reset_and_encrypt()
+
+
 os.chdir(CONSTANT_USER_VARIABLES["APP_FOLDER_PATH"])
 
 
@@ -183,19 +195,20 @@ def set_defaults():
     input_labels["GITHUB_USERNAME"] = tk.Label(input_frames["GITHUB_USERNAME"], text = "Enter the username of the GitHub account containing your scripts.")
     input_labels["GITHUB_USERNAME"].pack(anchor="w")
     input_boxes["GITHUB_USERNAME"] = tk.ttk.Entry(input_frames["GITHUB_USERNAME"], width=25)
-    input_boxes["GITHUB_USERNAME"].insert("end", user_variables_dict["GITHUB_USERNAME"])
+    input_boxes["GITHUB_USERNAME"].insert("end", json.loads(GC.get_decrypted_content())["GITHUB_USERNAME"])
     input_boxes["GITHUB_USERNAME"].pack(anchor="w", padx=10, pady=5)
 
     input_labels["GITHUB_REPO_NAME"] = tk.Label(input_frames["GITHUB_REPO_NAME"], text = "Enter the name of the GitHub repository containing your scripts.")
     input_labels["GITHUB_REPO_NAME"].pack(anchor="w")
     input_boxes["GITHUB_REPO_NAME"] = tk.ttk.Entry(input_frames["GITHUB_REPO_NAME"], width=25)
-    input_boxes["GITHUB_REPO_NAME"].insert("end", user_variables_dict["GITHUB_REPO_NAME"])
+    input_boxes["GITHUB_REPO_NAME"].insert("end", json.loads(GC.get_decrypted_content())["GITHUB_REPO_NAME"])
     input_boxes["GITHUB_REPO_NAME"].pack(anchor="w", padx=10, pady=5)
 
     input_labels["GITHUB_ACCESS_TOKEN"] = tk.Label(input_frames["GITHUB_ACCESS_TOKEN"], text = "Enter your GitHub personal access token. If you are using a public repository, you may leave this field blank.")
     input_labels["GITHUB_ACCESS_TOKEN"].pack(anchor="w")
     input_boxes["GITHUB_ACCESS_TOKEN"] = tk.ttk.Entry(input_frames["GITHUB_ACCESS_TOKEN"], width=40, show="*")
-    input_boxes["GITHUB_ACCESS_TOKEN"].insert("end", user_variables_dict["GITHUB_ACCESS_TOKEN"])
+    if json.loads(GC.get_decrypted_content())["GITHUB_ACCESS_TOKEN"] != "":
+        input_boxes["GITHUB_ACCESS_TOKEN"].insert("end", "*"*10)
     input_boxes["GITHUB_ACCESS_TOKEN"].pack(anchor="w", padx=10, pady=5)
 
 
@@ -211,6 +224,7 @@ def set_defaults():
                 value = not bool(default_show_window_intvar.get())
             elif user_variable_name == "MAX_LOG_LENGTH":
                 value = int(input_boxes[user_variable_name].get())
+
             else:
                 value = input_boxes[user_variable_name].get()
                 
@@ -218,6 +232,18 @@ def set_defaults():
                 restart_required = True
 
             USER_VARIABLES.update(user_variable_name, value)
+
+        gitcreds_dict = json.loads(GC.get_decrypted_content())
+        for key in list(gitcreds_dict.keys()):
+            value = gitcreds_dict[key]
+            new_value = input_boxes[key].get().strip()
+            if new_value == "*"*10 and key == "GITHUB_ACCESS_TOKEN":
+                new_value = value
+            if value != new_value:
+                restart_required = True 
+            gitcreds_dict[key] = new_value
+        gitcreds_json_string = json.dumps(gitcreds_dict)
+        GC.encrypt(gitcreds_json_string)
 
         if restart_required == True:
             restart_program_fromTkWin()
@@ -512,7 +538,8 @@ def update_local_user_scripts():
     if os.path.isdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]):
         shutil.rmtree(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"])
     os.mkdir(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"]) 
-    user_scripts_names = user_scripts_compiler.update_scripts(CONSTANT_USER_VARIABLES['GITHUB_ACCESS_TOKEN'], CONSTANT_USER_VARIABLES['GITHUB_USERNAME'], CONSTANT_USER_VARIABLES["GITHUB_REPO_NAME"], f"{CONSTANT_USER_VARIABLES['USERSCRIPTS_FOLDER_PATH']}")
+    gitcreds_dict = json.loads(GC.get_decrypted_content())
+    user_scripts_names = user_scripts_compiler.update_scripts(gitcreds_dict['GITHUB_ACCESS_TOKEN'], gitcreds_dict['GITHUB_USERNAME'], gitcreds_dict["GITHUB_REPO_NAME"], f"{CONSTANT_USER_VARIABLES['USERSCRIPTS_FOLDER_PATH']}")
     user_scripts_statuses = dict()
     for user_script_name in user_scripts_names:
         user_scripts_statuses[user_script_name] = 'None'
@@ -536,13 +563,12 @@ def main():
     while True:
         try:
             mainlogger1.updatelog(f"Authenticating with Exterior...")
-            client = exterior_connection.authenticate('creds/service_account_credentials.json')
+            client = exterior_connection.authenticate('creds/SERVICE_ACCOUNT_CREDENTIALS.json')
             mainlogger1.updatelog(f"Done.")
             break
         except Exception as e:
             print(e)
             countdown(60, f"Authentication Failed. Next Attempt to Authenticate:", logger = mainlogger1)
-
 
     while True:        
         try:
@@ -553,17 +579,15 @@ def main():
             print(e)
             countdown(60, f"Exterior/{CONSTANT_USER_VARIABLES['COMPUTER_NAME']} could not be opened. Next Attempt:", logger = mainlogger1)
 
-
     while True:
         try:
-            mainlogger1.updatelog(f"Fetching user-scripts from GitHub/{CONSTANT_USER_VARIABLES['GITHUB_USERNAME']}/{CONSTANT_USER_VARIABLES['GITHUB_REPO_NAME']}...")
+            mainlogger1.updatelog(f"Fetching user-scripts from GitHub/{gitcreds_dict['GITHUB_USERNAME']}/{gitcreds_dict['GITHUB_REPO_NAME']}...")
             UserScripts.statuses = update_local_user_scripts()
             mainlogger1.updatelog(f"Done.")
             break
         except Exception as e:
             print(e)
-            countdown(60, f"Failed to fetch user-scripts from GitHub/{CONSTANT_USER_VARIABLES['GITHUB_USERNAME']}/{CONSTANT_USER_VARIABLES['GITHUB_REPO_NAME']}. Next Attempt:", logger = mainlogger1)
-
+            countdown(60, f"Failed to fetch user-scripts from GitHub/{gitcreds_dict['GITHUB_USERNAME']}/{gitcreds_dict['GITHUB_REPO_NAME']}. Next Attempt:", logger = mainlogger1)
 
     for key in UserScripts.statuses.keys():
         UserScripts.ActiveSubprocesses.loggers[key] = Logger()
@@ -619,6 +643,9 @@ def main():
 
                         for user_variable_name in CONSTANT_USER_VARIABLES:
                             new_env["SC_"+user_variable_name] = CONSTANT_USER_VARIABLES[user_variable_name]
+
+                        for gitcred in list(gitcreds_dict.keys()):
+                            new_env["SC_"+gitcred]=gitcreds_dict[gitcred]
 
                         script_path = os.path.join(CONSTANT_USER_VARIABLES["USERSCRIPTS_FOLDER_PATH"],key)
                         script_parent_dir_path = os.path.dirname(os.path.abspath(script_path))

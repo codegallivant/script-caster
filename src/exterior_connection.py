@@ -3,16 +3,26 @@ from oauth2client.service_account import ServiceAccountCredentials
 from copy import deepcopy
 import datetime
 import time
+from cryptography.fernet import Fernet
+import json
+import os
+from src.credentials import Credential
 
 
 def authenticate(creds_path):
-#	print("Connecting to Google Spreadsheets...")
+
 	scope = ['https://spreadsheets.google.com/feeds',
 	'https://www.googleapis.com/auth/drive']
-#	print("Authenticating...")
-	creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
+
+	SAC = Credential(creds_path)
+	creds_json_string = SAC.get_decrypted_content()
+	creds_dict = json.loads(creds_json_string)
+
+	creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 	client = gspread.authorize(creds)
-#	print("Authentication Successful!")
+
+	SAC.reset_and_encrypt()
+
 	return client
 
 
